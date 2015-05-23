@@ -57,7 +57,7 @@ class cmd57(scpi_device):
 
     def set_bts_tch_ts(self, slot):
         """ 2.2.2 Configure TCH timeslot """
-        return self.scpi.ask_int("CONF:CHAN:BTS:TCH:SLOT %d"%int(slot), False)
+        return self.scpi.send_command("CONF:CHAN:BTS:TCH:SLOT %d"%int(slot), False)
 
     def ask_bts_tsc(self):
         """ 2.2.2 Configured BTS TSC """
@@ -65,7 +65,7 @@ class cmd57(scpi_device):
 
     def set_bts_tsc(self, tsc):
         """ 2.2.2 Configure BTS TSC """
-        return self.scpi.ask_int("CONF:CHAN:BTS:TSC %d"%int(tsc), False)
+        return self.scpi.send_command("CONF:CHAN:BTS:TSC %d"%int(tsc), False)
 
     def ask_ban_tsc(self):
         """ 2.3 Burst Analysis (Module testing) TSC """
@@ -73,7 +73,7 @@ class cmd57(scpi_device):
 
     def set_ban_tsc(self, tsc):
         """ 2.3 Burst Analysis (Module testing) TSC """
-        return self.scpi.ask_int("CONF:CHAN:BANalysis:TSC %d"%int(tsc), False)
+        return self.scpi.send_command("CONF:CHAN:BANalysis:TSC %d"%int(tsc), False)
 
     def ask_test_mode(self):
         """ 2.4 Test mode
@@ -92,7 +92,7 @@ class cmd57(scpi_device):
               RFGenerator - RF generator (same as RFM?)
               IQSPec      - IQ spectrum (requires hardware option)
         """
-        return self.scpi.ask_str("PROCedure:SEL %s"%str(mode), False)
+        return self.scpi.send_command("PROCedure:SEL %s"%str(mode), False)
 
     def ask_dev_state(self):
         """ 9.1 Current Device State """
@@ -100,9 +100,11 @@ class cmd57(scpi_device):
 
     def set_dev_state(self, state):
         """ 9.1 Current Device State """
-        return self.scpi.ask_str("STATus:DEVice %s"%str(state), False)
+        return self.scpi.send_command("STATus:DEVice %s"%str(state), False)
 
-    def set_
+    def bcch_sync(self):
+        """ 3 Perform Synchronization with BCCH or Wired Sync """
+        return self.scpi.send_command("PROC:SYNChronize", False)
 
     ######################################
     ###   High level functions
