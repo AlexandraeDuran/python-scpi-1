@@ -8,7 +8,7 @@ class cmd57(scpi_device):
     def __init__(self, transport, *args, **kwargs):
         """Initializes a device for the given transport"""
         super(cmd57, self).__init__(transport, *args, **kwargs)
-        self.scpi.command_timeout = 1.5 # Seconds
+        self.scpi.command_timeout = 5 # Seconds
         self.scpi.ask_default_wait = 0 # Seconds
 
     ######################################
@@ -67,6 +67,24 @@ class cmd57(scpi_device):
         """ 2.2.2 Configure BTS TSC """
         return self.scpi.send_command("CONF:CHAN:BTS:TSC %d"%int(tsc), False)
 
+    def ask_ban_arfcn(self):
+        """ 2.3 Burst Analysis (Module testing) / Channel number (ARFCN) """
+        return self.scpi.ask_int("CONF:CHAN:BANalysis:ARFCn?")
+
+    def set_ban_arfcn(self, arfcn):
+        """ 2.3 Burst Analysis (Module testing) / Channel number (ARFCN) """
+        return self.scpi.send_command("CONF:CHAN:BANalysis:ARFCn %d"%int(arfcn), False)
+
+    def ask_mod_freq(self):
+        """ 2.3 Burst Analysis (Module testing) / Channel frequency
+            WARN: UNSUPPORTED? """
+        return self.scpi.ask_float("CONF:CHAN:MODalysis:ARFCn:FREQ?")
+
+    def set_mod_freq(self, freq):
+        """ 2.3 Burst Analysis (Module testing) / Channel frequency
+            WARN: UNSUPPORTED? """
+        return self.scpi.send_command("CONF:CHAN:MODalysis:ARFCn:FREQ %f"%float(freq), False)
+
     def ask_ban_tsc(self):
         """ 2.3 Burst Analysis (Module testing) TSC """
         return self.scpi.ask_int("CONF:CHAN:BANalysis:TSC?")
@@ -74,6 +92,14 @@ class cmd57(scpi_device):
     def set_ban_tsc(self, tsc):
         """ 2.3 Burst Analysis (Module testing) TSC """
         return self.scpi.send_command("CONF:CHAN:BANalysis:TSC %d"%int(tsc), False)
+
+    def ask_ban_expected_power(self):
+        """ 2.3 Burst Analysis (Module testing) TSC """
+        return self.scpi.ask_float("CONF:BANalysis:POWer:EXPected?")
+
+    def set_ban_expected_power(self, pwr):
+        """ 2.3 Burst Analysis (Module testing) TSC """
+        return self.scpi.send_command("CONF:BANalysis:POWer:EXPected %f"%float(pwr), False)
 
     def ask_test_mode(self):
         """ 2.4 Test mode
@@ -115,6 +141,12 @@ class cmd57(scpi_device):
         """
         return self.scpi.send_command("PROCedure:BTSState %s"%str(state), False)
 
+    def ask_power_mask_match(self):
+        """ 7.3.1 Power Tolerance values / Query for observance of the tolerances of the power/time template
+            Valid in: BTCH, MOD
+            Unit: dBm  """
+        return self.scpi.ask_str("CALC:LIMit:POWer:MATChing?")
+
     def ask_burst_power_avg(self):
         """ 7.3.2 Power Measurement / Average power of the burst (read)
             Valid in: BBCH, BTCH, BAN
@@ -139,13 +171,96 @@ class cmd57(scpi_device):
             Unit: dB  """
         return self.scpi.ask_float_list("FETCh:ARRay:BURSt:POWer?")
 
+    def ask_phase_freq_match(self):
+        """ 7.4.1 Phase and Frequency Errors / Tolerance values / Query for observance of tolerances (single-value measurment)
+            Valid in: BBCH, BTCH, BAN, MOD
+            Return: (MATC | NMAT | INV) for each of:
+                    - Peak phase error
+                    - RMS phase error
+                    - Frequency error """
+        return self.scpi.ask_str_list("CALCulate:LIMit:PHFR:TOLerance:MATChing?")
+
+    def ask_phase_freq_match_avg(self):
+        """ 7.4.1 Phase and Frequency Errors / Tolerance values / Query for observance of tolerances (average measurment)
+            Valid in: BTCH, BAN, MOD
+            Return: (MATC | NMAT | INV) for each of:
+                    - Peak phase error
+                    - RMS phase error
+                    - Frequency error """
+        return self.scpi.ask_str_list("CALCulate:LIMit:PHFR:TOLerance:MATChing:AVERage?")
+
+    def ask_phase_freq_match_max(self):
+        """ 7.4.1 Phase and Frequency Errors / Tolerance values / Query for observance of tolerances (max measurment)
+            Valid in: BTCH, BAN, MOD
+            Return: (MATC | NMAT | INV) for each of:
+                    - Peak phase error
+                    - RMS phase error
+                    - Frequency error """
+        return self.scpi.ask_str_list("CALCulate:LIMit:PHFR:TOLerance:MATChing:MAXimum?")
+
+    def ask_phase_phase_err_rms(self):
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst RMS (single-value measurment, execute)
+            Valid in: BTCH, MOD  """
+        return self.scpi.ask_float("READ:BURSt:PHASe:ERRor:RMS?")
+
+    def fetch_phase_phase_err_rms(self):
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst RMS (single-value measurment, fetch)
+            Valid in: BTCH, MOD  """
+        return self.scpi.ask_float("FETCh:BURSt:PHASe:ERRor:RMS?")
+
+    def ask_phase_phase_err_pk(self):
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst Peak (single-value measurment, execute)
+            Valid in: BTCH, MOD  """
+        return self.scpi.ask_float("READ:BURSt:PHASe:ERRor:PEAK?")
+
+    def fetch_phase_phase_err_pk(self):
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst Peak (single-value measurment, fetch)
+            Valid in: BTCH, MOD  """
+        return self.scpi.ask_float("FETCh:BURSt:PHASe:ERRor:PEAK?")
+
+    def ask_spectrum_modulation_match(self):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Query for observance of tolerances of the Spectrum (Modulation)
+            Note: Supplies result for the last measurement
+            Valid in: BTCH, MOD
+            Return: (MATC | NMAT | INV) """
+        return self.scpi.ask_str_list("CALCulate:LIMit:SPECtrum:MODulation:MATChing?")
+
+    def ask_spectrum_switching_match(self):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Query for observance of tolerances of the Spectrum (Switching)
+            Note: Supplies result for the last measurement
+            Valid in: BTCH, MOD
+            Return: (MATC | NMAT | INV) """
+        return self.scpi.ask_str("CALCulate:LIMit:SPECtrum:SWITching:MATChing?")
+
+    def ask_spectrum_modulation(self):
+        """ 7.5.3 Executing Spectrum Measurement (Modulation)
+            Valid in: BTCH, MOD  """
+        # TODO: LONG operation
+        return self.scpi.ask_float_list("READ:ARRay:SPECtrum:MODulation?")
+
+    def fetch_spectrum_modulation(self):
+        """ 7.5.3 Executing Spectrum Measurement (Modulation)
+            Valid in: BTCH, MOD  """
+        return self.scpi.ask_float_list("FETCh:ARRay:SPECtrum:MODulation?")
+
+    def ask_spectrum_switching(self):
+        """ 7.5.3 Executing Spectrum Measurement (Switching)
+            Valid in: BTCH, MOD  """
+        # TODO: LONG operation
+        return self.scpi.ask_float_list("READ:ARRay:SPECtrum:BTS:SWITching?")
+
+    def fetch_spectrum_switching(self):
+        """ 7.5.3 Executing Spectrum Measurement (Switching)
+            Valid in: BTCH, MOD  """
+        return self.scpi.ask_float_list("FETCh:ARRay:SPECtrum:BTS:SWITching?")
+
     def ask_peak_power(self):
         """ 7.8 Other measurements / Peak Power Measurement (read) """
-        return self.scpi.ask_int("READ:POWer?")
+        return self.scpi.ask_float("READ:POWer?")
 
     def fetch_peak_power(self):
         """ 7.8 Other measurements / Peak Power Measurement (fetch) """
-        return self.scpi.ask_int("FETCh:POWer?")
+        return self.scpi.ask_float("FETCh:POWer?")
 
     def ask_dev_state(self):
         """ 9.1 Current Device State """
