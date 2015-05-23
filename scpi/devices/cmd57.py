@@ -11,11 +11,11 @@ class cmd57(scpi_device):
         self.scpi.command_timeout = 1.5 # Seconds
         self.scpi.ask_default_wait = 0 # Seconds
 
-    def ask_installed_options():
+    def ask_installed_options(self):
         """ List installed option """
         return self.scpi.ask_str("*OPT?")
 
-    def ask_io_used():
+    def ask_io_used(self):
         """ Inputs and outputs used """
         return self.scpi.ask_str("ROUT:IOC?")
 
