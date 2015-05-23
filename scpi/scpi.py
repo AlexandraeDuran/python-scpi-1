@@ -78,11 +78,11 @@ class scpi(object):
     def check_error(self, command_was):
         """Checks the last error code and raises CommandError if the code is not 0 ("No error")"""
         self.send_command_unchecked("SYST:ERR?", True)
-        code, errstr = self.parse_error(self.message_stack[-1])
+        code, errstr = self.parse_error(self.message_stack.pop())
         if code != 0:
             raise CommandError(command_was, code, errstr)
-        # Pop the no-error out
-        self.message_stack.pop()
+        return code
+        
 
     def pop_str(self):
         """Pops the last value from message stack and parses it as boolean"""
