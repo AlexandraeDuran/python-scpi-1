@@ -91,8 +91,13 @@ class scpi(object):
         data = self.message_stack.pop()
         return self.parse_number(data)
 
-    def ask_number(self, command, force_wait=None):
-        """Sends the command (checking for errors), then pops and parses the last line as number
+    def pop_and_parse_boolean(self):
+        """Pops the last value from message stack and parses it as boolean"""
+        data = self.message_stack.pop()
+        return bool(int(data))
+
+    def _ask_no_pop(self, command, force_wait=None):
+        """Sends the command (checking for errors), but does NOT pop the value
         The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
         the request we can use this to avoid nasty race conditions"""
         if force_wait == None:
@@ -106,13 +111,21 @@ class scpi(object):
             self.check_error(command)
             # If there was not error, re-raise the timeout
             raise e
-        return self.pop_and_parse_number()
         # PONDER: Before returning check if there are leftover messages in the stack, that would not be a good thing...
 
-    def pop_and_parse_boolean(self):
-        """Pops the last value from message stack and parses it as boolean"""
-        data = self.message_stack.pop()
-        return bool(int(data))
+    def ask_number(self, command, force_wait=None):
+        """Sends the command (checking for errors), then pops and parses the last line as number
+        The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
+        the request we can use this to avoid nasty race conditions"""
+        self._ask_no_pop(command, force_wait)
+        return self.pop_and_parse_number()
+
+    def ask_str(self, command, force_wait=None):
+        """Sends the command (checking for errors), returning reply as a string
+        The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
+        the request we can use this to avoid nasty race conditions"""
+        self._ask_no_pop(command, force_wait)
+        return self.message_stack.pop()
 
     def abort_command(self):
         """Shortcut to the transports abort_command call"""
