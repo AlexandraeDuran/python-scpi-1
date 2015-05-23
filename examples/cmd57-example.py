@@ -21,6 +21,12 @@ def show_bts_config(dev):
     print "BTS TCH timeslot:     %d" % dev.ask_bts_tch_ts()
     print "BTS TSC:              %d" % dev.ask_bts_tsc()
 
+def show_bts_info(dev):
+    print "BTS MCC:              %d" % dev.ask_bts_mcc()
+    print "BTS MNC:              %d" % dev.ask_bts_mcc()
+    print "BTS BSIC:             %d" % dev.ask_bts_bsic()
+    print "BTS burst avg power:  %d dBm" % dev.ask_burst_power_avg()
+
 def show_mod_config(dev):
     print "Module test TSC:      %d" % dev.ask_ban_tsc()
 
