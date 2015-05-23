@@ -28,7 +28,15 @@ def show_bts_info(dev):
     print "BTS burst avg power:  %d dBm" % dev.ask_burst_power_avg()
 
 def show_mod_config(dev):
+    print "Module test ARFCN:    %d" % dev.ask_ban_arfcn()
     print "Module test TSC:      %d" % dev.ask_ban_tsc()
+    print "Module test exp.power %f dBm" % dev.ask_ban_expected_power()
+
+def show_mod_info(dev):
+    print "Module peak power:    %f dBm" % dev.ask_peak_power()
+    print "Module pk.phase, avg.phase, freq: %s" % ", ".join(dev.ask_phase_freq_match_avg())
+    print "Module spectrum modulation: %s" % dev.ask_spectrum_modulation_match()
+    print "Module spectrum switching: %s" % dev.ask_spectrum_switching_match()
 
 def show_cur_mode(dev):
     print "Current test mode:    %s" % dev.ask_test_mode()
