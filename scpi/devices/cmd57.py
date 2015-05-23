@@ -115,6 +115,30 @@ class cmd57(scpi_device):
         """
         return self.scpi.send_command("PROCedure:BTSState %s"%str(state), False)
 
+    def ask_burst_power_avg(self):
+        """ 7.3.2 Power Measurement / Average power of the burst (read)
+            Valid in: BBCH, BTCH, BAN
+            Unit: dBm  """
+        return self.scpi.ask_float("READ:BURSt:POWer:AVERage?")
+
+    def fetch_burst_power_avg(self):
+        """ 7.3.2 Power Measurement / Average power of the burst (fetch)
+            Valid in: BBCH, BTCH, BAN
+            Unit: dBm  """
+        return self.scpi.ask_float("FETCh:BURSt:POWer:AVERage?")
+
+    def ask_burst_power_arr(self):
+        """ 7.3.2 Power Measurement / Power values of the entire burst (read)
+            Valid in: BTCH, BAN
+            Unit: dB  """
+        return self.scpi.ask_float_list("READ:ARRay:BURSt:POWer?")
+
+    def fetch_burst_power_arr(self):
+        """ 7.3.2 Power Measurement / Power values of the entire burst (fetch)
+            Valid in: BTCH, BAN
+            Unit: dB  """
+        return self.scpi.ask_float_list("FETCh:ARRay:BURSt:POWer?")
+
     def ask_peak_power(self):
         """ 7.8 Other measurements / Peak Power Measurement (read) """
         return self.scpi.ask_int("READ:POWer?")
