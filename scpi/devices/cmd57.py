@@ -96,6 +96,7 @@ class cmd57(scpi_device):
 
     def bcch_sync(self):
         """ 3 Perform Synchronization with BCCH or Wired Sync """
+        # TODO: Introduce longer timeout
         return self.scpi.send_command("PROCedure:SYNChronize", False)
 
     def ask_sync_state(self):
@@ -113,6 +114,14 @@ class cmd57(scpi_device):
               BEXTernal - BER measurements with RS232 / IEEE488
         """
         return self.scpi.send_command("PROCedure:BTSState %s"%str(state), False)
+
+    def ask_peak_power(self):
+        """ 7.8 Other measurements / Peak Power Measurement (read) """
+        return self.scpi.ask_int("READ:POWer?")
+
+    def fetch_peak_power(self):
+        """ 7.8 Other measurements / Peak Power Measurement (fetch) """
+        return self.scpi.ask_int("FETCh:POWer?")
 
     def ask_dev_state(self):
         """ 9.1 Current Device State """
