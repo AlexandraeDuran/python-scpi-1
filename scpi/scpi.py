@@ -82,32 +82,56 @@ class scpi(object):
         if code != 0:
             raise CommandError(command_was, code, errstr)
         return code
-        
 
     def pop_str(self):
-        """Pops the last value from message stack and parses it as boolean"""
+        """Pops the last value from message stack and parses it as a string"""
         data = self.message_stack.pop()
         return str(data)
 
     def pop_decimal(self):
-        """Pops the last value from message stack and parses it as Decimal"""
+        """Pops the last value from message stack and parses it as a Decimal"""
         data = self.message_stack.pop()
         return decimal.Decimal(data)
 
     def pop_int(self):
-        """Pops the last value from message stack and parses it as int"""
+        """Pops the last value from message stack and parses it as an int"""
         data = self.message_stack.pop()
         return int(data)
 
     def pop_float(self):
-        """Pops the last value from message stack and parses it as float"""
+        """Pops the last value from message stack and parses it as a float"""
         data = self.message_stack.pop()
         return float(data)
 
     def pop_bool(self):
-        """Pops the last value from message stack and parses it as boolean"""
+        """Pops the last value from message stack and parses it as a boolean"""
         data = self.message_stack.pop()
         return bool(int(data))
+
+    def pop_str_list(self):
+        """Pops the last value from message stack and parses it as a list of string values"""
+        data = self.message_stack.pop()
+        return str(data).split(',')
+
+    def pop_decimal_list(self):
+        """Pops the last value from message stack and parses it as a list of Decimal values"""
+        data = self.message_stack.pop()
+        return [decimal.Decimal(val) for val in data.split(',')]
+
+    def pop_int_list(self):
+        """Pops the last value from message stack and parses it as a list of int values"""
+        data = self.message_stack.pop()
+        return [int(val) for val in data.split(',')]
+
+    def pop_float_list(self):
+        """Pops the last value from message stack and parses it as a list of float values"""
+        data = self.message_stack.pop()
+        return [float(val) for val in data.split(',')]
+
+    def pop_bool_list(self):
+        """Pops the last value from message stack and parses it as a list of boolean values"""
+        data = self.message_stack.pop()
+        return [bool(int(val)) for val in data.split(',')]
 
     def _ask_no_pop(self, command, force_wait=None):
         """Sends the command (checking for errors), but does NOT pop the value
@@ -123,6 +147,13 @@ class scpi(object):
             # If there was not error, re-raise the timeout
             raise e
         # PONDER: Before returning check if there are leftover messages in the stack, that would not be a good thing...
+
+    def ask_str(self, command, force_wait=None):
+        """Sends the command (checking for errors), returning reply as a string
+        The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
+        the request we can use this to avoid nasty race conditions"""
+        self._ask_no_pop(command, force_wait)
+        return self.pop_str()
 
     def ask_decimal(self, command, force_wait=None):
         """Sends the command (checking for errors), then pops and parses the last line as Decimal
@@ -145,12 +176,47 @@ class scpi(object):
         self._ask_no_pop(command, force_wait)
         return self.pop_float()
 
-    def ask_str(self, command, force_wait=None):
-        """Sends the command (checking for errors), returning reply as a string
+    def ask_bool(self, command, force_wait=None):
+        """Sends the command (checking for errors), then pops and parses the last line as float
         The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
         the request we can use this to avoid nasty race conditions"""
         self._ask_no_pop(command, force_wait)
-        return self.pop_str()
+        return self.pop_bool()
+
+    def ask_str_list(self, command, force_wait=None):
+        """Sends the command (checking for errors), returning reply as a list of string values
+        The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
+        the request we can use this to avoid nasty race conditions"""
+        self._ask_no_pop(command, force_wait)
+        return self.pop_str_list()
+
+    def ask_decimal_list(self, command, force_wait=None):
+        """Sends the command (checking for errors), then pops and parses the last line as a list of Decimal values
+        The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
+        the request we can use this to avoid nasty race conditions"""
+        self._ask_no_pop(command, force_wait)
+        return self.pop_decimal_list()
+
+    def ask_int_list(self, command, force_wait=None):
+        """Sends the command (checking for errors), then pops and parses the last line as a list of int values
+        The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
+        the request we can use this to avoid nasty race conditions"""
+        self._ask_no_pop(command, force_wait)
+        return self.pop_int_list()
+
+    def ask_float_list(self, command, force_wait=None):
+        """Sends the command (checking for errors), then pops and parses the last line as a list of float values
+        The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
+        the request we can use this to avoid nasty race conditions"""
+        self._ask_no_pop(command, force_wait)
+        return self.pop_float_list()
+
+    def ask_bool_list(self, command, force_wait=None):
+        """Sends the command (checking for errors), then pops and parses the last line as a list of float values
+        The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
+        the request we can use this to avoid nasty race conditions"""
+        self._ask_no_pop(command, force_wait)
+        return self.pop_bool_list()
 
     def abort_command(self):
         """Shortcut to the transports abort_command call"""
@@ -216,12 +282,9 @@ class scpi_device(object):
 
     def query_output(self):
         """Returns the output state"""
-        self.scpi.send_command("OUTP:STAT?", True)
-        return self.scpi.pop_and_parse_boolean()
+        return self.scpi.ask_bool("OUTP:STAT?", True)
 
     def identify(self):
         """Returns the identification data, standard order is Manufacturer, Model no, Serial no (or 0), Firmware version"""
-        self.scpi.send_command("*IDN?", True)
-        data = self.scpi.message_stack.pop()
-        return data.split(',')
+        return self.scpi.ask_str_list("*IDN?", True)
 
