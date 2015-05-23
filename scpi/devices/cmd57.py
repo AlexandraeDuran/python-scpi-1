@@ -11,6 +11,10 @@ class cmd57(scpi_device):
         self.scpi.command_timeout = 1.5 # Seconds
         self.scpi.ask_default_wait = 0 # Seconds
 
+    ######################################
+    ###   Low level functions
+    ######################################
+
     def ask_installed_options(self):
         """ List installed option """
         return self.scpi.ask_str_list("*OPT?")
@@ -35,25 +39,51 @@ class cmd57(scpi_device):
         """ 2.2.2 Configured CCCH ARFCN """
         return self.scpi.ask_int("CONF:CHAN:BTS:CCCH:ARFCN?")
 
+    def set_bts_ccch_arfcn(self, arfcn):
+        """ 2.2.2 Configure CCCH ARFCN """
+        return self.scpi.send_command("CONF:CHAN:BTS:CCCH:ARFCN %d"%int(arfcn), False)
+
     def ask_bts_tch_arfcn(self):
         """ 2.2.2 Configured TCH ARFCN """
         return self.scpi.ask_int("CONF:CHAN:BTS:TCH:ARFCN?")
+
+    def set_bts_tch_arfcn(self, arfcn):
+        """ 2.2.2 Configure TCH ARFCN """
+        return self.scpi.send_command("CONF:CHAN:BTS:TCH:ARFCN %d"%int(arfcn), False)
 
     def ask_bts_tch_ts(self):
         """ 2.2.2 Configured TCH timeslot """
         return self.scpi.ask_int("CONF:CHAN:BTS:TCH:SLOT?")
 
+    def set_bts_tch_ts(self, slot):
+        """ 2.2.2 Configure TCH timeslot """
+        return self.scpi.ask_int("CONF:CHAN:BTS:TCH:SLOT %d"%int(slot), False)
+
     def ask_bts_tsc(self):
         """ 2.2.2 Configured BTS TSC """
         return self.scpi.ask_int("CONF:CHAN:BTS:TSC?")
+
+    def set_bts_tsc(self, tsc):
+        """ 2.2.2 Configure BTS TSC """
+        return self.scpi.ask_int("CONF:CHAN:BTS:TSC %d"%int(tsc), False)
 
     def ask_ban_tsc(self):
         """ 2.3 Burst Analysis (Module testing) TSC """
         return self.scpi.ask_int("CONF:CHAN:BANalysis:TSC?")
 
+    def set_ban_tsc(self, tsc):
+        """ 2.3 Burst Analysis (Module testing) TSC """
+        return self.scpi.ask_int("CONF:CHAN:BANalysis:TSC %d"%int(tsc), False)
+
     def ask_test_mode(self):
         """ 2.4 Test mode
-            Supported values:
+            See set_test_mode for the list of supported modes
+        """
+        return self.scpi.ask_str("PROCedure:SEL?")
+
+    def set_test_mode(self, mode):
+        """ 2.4 Test mode
+            Supported modes:
               NONE        - No tes mode (switch on state)
               MANual      - BTS test aka signaling test
               MODultest   - Module test (same as BAN?)
@@ -62,11 +92,20 @@ class cmd57(scpi_device):
               RFGenerator - RF generator (same as RFM?)
               IQSPec      - IQ spectrum (requires hardware option)
         """
-        return self.scpi.ask_str("PROCedure:SEL?")
+        return self.scpi.ask_str("PROCedure:SEL %s"%str(mode), False)
 
     def ask_dev_state(self):
         """ 9.1 Current Device State """
         return self.scpi.ask_str("STATus:DEVice?")
+
+    def set_dev_state(self, state):
+        """ 9.1 Current Device State """
+        return self.scpi.ask_str("STATus:DEVice %s"%str(state))
+
+    ######################################
+    ###   High level functions
+    ######################################
+
 
 
 def rs232(port, **kwargs):
