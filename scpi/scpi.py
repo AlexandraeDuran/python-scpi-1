@@ -15,7 +15,7 @@ class scpi(object):
         self.transport = transport
         self.transport.set_message_callback(self.message_received)
         self.message_stack = []
-        self.error_format_regex = re.compile(r"([+-]\d+),\"(.*?)\"")
+        self.error_format_regex = re.compile(r"([+-]?\d+),\"(.*?)\"")
         self.command_timeout = 1.5 # Seconds
         self.ask_default_wait = 0 # Seconds
         self.transport_lock = Lock()
