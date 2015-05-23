@@ -39,11 +39,13 @@ class scpi(object):
         errstr = match.group(2)
         return (code, errstr)
 
-    def send_command_unchecked(self, command, expect_response=True, force_wait=0):
+    def send_command_unchecked(self, command, expect_response=True, force_wait=None):
         """Sends the command, waits for all data to complete (and if response is expected for new entry to message stack).
         The force_wait parameter is in seconds, if we know the device is going to take a while processing the request we can use this to avoid nasty race conditions"""
         self.transport_lock.acquire()
         try:
+            if force_wait == None:
+                force_wait = self.ask_default_wait
             stack_size_start = len(self.message_stack)
             self.transport.send_command(command)
             time.sleep(force_wait)
@@ -111,8 +113,6 @@ class scpi(object):
         """Sends the command (checking for errors), but does NOT pop the value
         The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
         the request we can use this to avoid nasty race conditions"""
-        if force_wait == None:
-            force_wait = self.ask_default_wait
         # TODO: Maybe check error opnly if we do not get a response ??
         re_raise = None
         try:
