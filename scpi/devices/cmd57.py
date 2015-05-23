@@ -100,7 +100,9 @@ class cmd57(scpi_device):
 
     def set_dev_state(self, state):
         """ 9.1 Current Device State """
-        return self.scpi.ask_str("STATus:DEVice %s"%str(state))
+        return self.scpi.ask_str("STATus:DEVice %s"%str(state), False)
+
+    def set_
 
     ######################################
     ###   High level functions
