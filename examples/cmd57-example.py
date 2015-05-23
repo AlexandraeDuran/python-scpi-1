@@ -18,8 +18,8 @@ if __name__ == '__main__':
     dev = cmd57.rs232(sys.argv[1], rtscts=True)
     atexit.register(dev.quit)
 
-    print dev.identify()
-    # List options
-    print dev.ask_installed_options()
-    # which port are we using?
-    print dev.ask_io_used()
+    print "Tester version: %s" % " ".join(dev.identify())
+    print "Installed options: %s" % dev.ask_installed_options()
+    print "RF input/output port configuration: %s " % dev.ask_io_used()
+    print
+    print "Expecting your input now"
