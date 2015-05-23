@@ -87,7 +87,7 @@ class scpi(object):
     def pop_str(self):
         """Pops the last value from message stack and parses it as boolean"""
         data = self.message_stack.pop()
-        return str(data))
+        return str(data)
 
     def pop_decimal(self):
         """Pops the last value from message stack and parses it as Decimal"""
