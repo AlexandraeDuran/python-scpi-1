@@ -84,7 +84,7 @@ class scpi(object):
         return code
 
     def _parse_int(self, val):
-        return val=="NAN" ? None : int(val)
+        return None if val=="NAN" else int(val)
 
     def pop_str(self):
         """Pops the last value from message stack and parses it as a string"""
