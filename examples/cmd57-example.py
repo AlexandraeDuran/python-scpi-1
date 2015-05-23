@@ -8,6 +8,26 @@ import os,sys
 from scpi.devices import cmd57
 import atexit
 
+def show_sys_info(dev):
+    print "System version:       %s" % " ".join(dev.identify())
+    print "Installed options:    %s" % " ".join(dev.ask_installed_options())
+
+def show_sys_config(dev):
+    print "RF input/output port: %s" % dev.ask_io_used()
+
+def show_bts_config(dev):
+    print "BTS CCCH ARFCN:       %d" % dev.ask_bts_ccch_arfcn()
+    print "BTS TCH ARFCN:        %d" % dev.ask_bts_tch_arfcn()
+    print "BTS TCH timeslot:     %d" % dev.ask_bts_tch_ts()
+    print "BTS TSC:              %d" % dev.ask_bts_tsc()
+
+def show_mod_config(dev):
+    print "Module test TSC:      %d" % dev.ask_ban_tsc()
+
+def show_cur_mode(dev):
+    print "Current test mode:    %s" % dev.ask_test_mode()
+    print "Current device state: %s" % dev.ask_dev_state()
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print "Usage:"
@@ -18,16 +38,12 @@ if __name__ == '__main__':
     dev = cmd57.rs232(sys.argv[1], rtscts=True)
     atexit.register(dev.quit)
 
-    print "Tester version:       %s" % " ".join(dev.identify())
-    print "Installed options:    %s" % " ".join(dev.ask_installed_options())
-    print "RF input/output port: %s" % dev.ask_io_used()
-    print "BTS CCCH ARFCN:       %d" % dev.ask_bts_ccch_arfcn()
-    print "BTS TCH ARFCN:        %d" % dev.ask_bts_tch_arfcn()
-    print "BTS TCH timeslot:     %d" % dev.ask_bts_tch_ts()
-    print "BTS TSC:              %d" % dev.ask_bts_tsc()
-    print "Module test TSC:      %d" % dev.ask_ban_tsc()
-    print "Current test mode:    %s" % dev.ask_test_mode()
-    print "Current device state: %s" % dev.ask_dev_state()
+    show_sys_info(dev)
+    show_sys_config(dev)
+    show_bts_config(dev)
+    show_mod_config(dev)
+    show_cur_mode(dev)
+
     print
     print "Expecting your input now"
 
