@@ -77,7 +77,7 @@ class cmd57(scpi_device):
 
     def ask_test_mode(self):
         """ 2.4 Test mode
-            See set_test_mode for the list of supported modes
+            See set_test_mode() for the list of supported modes
         """
         return self.scpi.ask_str("PROCedure:SEL?")
 
@@ -94,17 +94,29 @@ class cmd57(scpi_device):
         """
         return self.scpi.send_command("PROCedure:SEL %s"%str(mode), False)
 
+    def bcch_sync(self):
+        """ 3 Perform Synchronization with BCCH or Wired Sync """
+        return self.scpi.send_command("PROCedure:SYNChronize", False)
+
+    def ask_sync_state(self):
+        """ 3 Selected Measurement State
+            See set_sync_state() for the list of supported modes
+        """
+        return self.scpi.ask_str("PROCedure:BTSState?")
+
+    def set_sync_state(self, state):
+        """ 3 Selecting Measurement State
+            Supported states:
+              BIDL      - Idle
+              BBCH      - BCCH measurements
+              BTCH      - TCH measurements
+              BEXTernal - BER measurements with RS232 / IEEE488
+        """
+        return self.scpi.send_command("PROCedure:BTSState %s"%str(state), False)
+
     def ask_dev_state(self):
         """ 9.1 Current Device State """
         return self.scpi.ask_str("STATus:DEVice?")
-
-    def set_dev_state(self, state):
-        """ 9.1 Current Device State """
-        return self.scpi.send_command("STATus:DEVice %s"%str(state), False)
-
-    def bcch_sync(self):
-        """ 3 Perform Synchronization with BCCH or Wired Sync """
-        return self.scpi.send_command("PROC:SYNChronize", False)
 
     ######################################
     ###   High level functions
