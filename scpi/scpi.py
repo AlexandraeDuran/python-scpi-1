@@ -83,6 +83,9 @@ class scpi(object):
             raise CommandError(command_was, code, errstr)
         return code
 
+    def _parse_int(self, val):
+        return val=="NAN" ? None : int(val)
+
     def pop_str(self):
         """Pops the last value from message stack and parses it as a string"""
         data = self.message_stack.pop()
@@ -96,7 +99,7 @@ class scpi(object):
     def pop_int(self):
         """Pops the last value from message stack and parses it as an int"""
         data = self.message_stack.pop()
-        return int(data)
+        return _parse_int(data)
 
     def pop_float(self):
         """Pops the last value from message stack and parses it as a float"""
@@ -121,7 +124,7 @@ class scpi(object):
     def pop_int_list(self):
         """Pops the last value from message stack and parses it as a list of int values"""
         data = self.message_stack.pop()
-        return [int(val) for val in data.split(',')]
+        return [_parse_int(val) for val in data.split(',')]
 
     def pop_float_list(self):
         """Pops the last value from message stack and parses it as a list of float values"""
