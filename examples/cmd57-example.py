@@ -28,20 +28,27 @@ def show_bts_info(dev):
     print "BTS burst avg power:  %d dBm" % dev.ask_burst_power_avg()
 
 def show_mod_config(dev):
-    print "Module test ARFCN:    %d" % dev.ask_ban_arfcn()
-    print "Module test TSC:      %d" % dev.ask_ban_tsc()
-    print "Module test exp.power %f dBm" % dev.ask_ban_expected_power()
+    print "Module test - Burst Analysis configuration"
+    print "  Expected power:     %f dBm" % dev.ask_ban_expected_power()
+    print "  RF Channel:         %d" % dev.ask_ban_arfcn()
+    print "  Training sequence:  %d" % dev.ask_ban_tsc()
+    print "  Decode:             %s" % dev.
+    print "  Peak power bandw:   %s" % dev.ask_ban_input_bandwidth()
+    print "  Trigger mode:       %s" % dev.ask_ban_trigger_mode()
+    print "  Used RF Input:      %d" % parse_io_str(dev.ask_io_used())[0]
+    print "  Ext atten RF In1:   %f" % dev.ask_ext_att_rf_in1()
+    print "  Ext atten RF In2:   %f" % dev.ask_ext_att_rf_in2()
 
 def show_mod_info(dev):
-    (pk_phase_err, avg_phase_err, freq_err) = dev.ask_phase_freq_match_avg()
-    print "Module test - Burst Analysis"
+    (pk_phase_err_match, avg_phase_err_match, freq_err_match) = dev.ask_phase_freq_match_avg()
+    print "Module test - Burst Analysis measurements"
     print "  Peak power:         %f dBm" % dev.ask_peak_power()
     print "  Avg. burst power:   NA dBm"
     print "  Power ramp:         NA"
-    print "  Frequency error:    %d Hz" % freq_err
-    print "  Phase Error (PK):   %d deg" % pk_phase_err
-    print "  Phase Error (AVG):  %d deg" % avg_phase_err
-    print "Module test - Extra"
+    print "  Frequency error:    NA Hz  (%s)" % freq_err_match
+    print "  Phase Error (PK):   NA deg (%s)" % pk_phase_err_match
+    print "  Phase Error (AVG):  NA deg (%s)" % avg_phase_err_match
+    print "Module test - Extra measurements"
     print "  Spectrum modulation: %s" % dev.ask_spectrum_modulation_match()
     print "  Spectrum switching:  %s" % dev.ask_spectrum_switching_match()
 
