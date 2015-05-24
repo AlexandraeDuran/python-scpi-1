@@ -72,6 +72,32 @@ def show_cur_mode(dev):
     print "Current test mode:    %s" % dev.ask_test_mode()
     print "Current device state: %s" % dev.ask_dev_state()
 
+def switch_to_x(dev, mode):
+    if dev.ask_test_mode() != mode:
+        dev.set_test_mode("NONE")
+        dev.set_test_mode(mode)
+
+def switch_to_mod(dev):
+    _switch_to_x(dev, "MOD")
+
+def switch_to_ban(dev):
+    _switch_to_x(dev, "BAN")
+
+def switch_to_man(dev):
+    _switch_to_x(dev, "MAN")
+
+def switch_to_man_bbch(dev):
+    switch_to_man(dev)
+    if dev.ask_dev_state() != "BBCH":
+        dev.bcch_sync()
+
+def switch_to_man_btch(dev):
+    switch_to_man(dev)
+    if dev.ask_dev_state() != "BTCH":
+        if dev.ask_dev_state() != "BBCH":
+            dev.bcch_sync()
+        dev.set_sync_state("BTCH")
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print "Usage:"
