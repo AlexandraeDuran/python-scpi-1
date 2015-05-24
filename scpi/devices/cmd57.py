@@ -99,6 +99,10 @@ class cmd57(scpi_device):
             Second digit Y - BCC   """
         return self.scpi.ask_int("SENSE:SIGN:BSIC?")
 
+    #
+    # 2.2.2 Signaling Parameters for CMD
+    #
+
     def ask_bts_ccch_arfcn(self):
         """ 2.2.2 Configured CCCH ARFCN """
         return self.scpi.ask_int("CONF:CHAN:BTS:CCCH:ARFCN?")
@@ -128,8 +132,66 @@ class cmd57(scpi_device):
         return self.scpi.ask_int("CONF:CHAN:BTS:TSC?")
 
     def set_bts_tsc(self, tsc):
-        """ 2.2.2 Configur BTS TSC """
+        """ 2.2.2 Configure BTS TSC """
         return self.scpi.send_command("CONF:CHAN:BTS:TSC %d"%int(tsc), False)
+
+    def ask_bts_expected_power(self):
+        """ 2.2.2 Configured BTS Expected Power """
+        return self.scpi.ask_float("CONF:BTS:POWer:EXPected?")
+
+    def set_bts_expected_power(self, power):
+        """ 2.2.2 Configure BTS Expected Power """
+        return self.scpi.send_command("CONF:BTS:POWer:EXPected %.2f"%float(power), False)
+
+    def ask_bts_tch_tx_power(self):
+        """ 2.2.2 Configured BTS Transmitter power of the TCH in the used timeslot """
+        return self.scpi.ask_float("CONF:CHANnel:BTS?")
+
+    def set_bts_tch_tx_power(self, power):
+        """ 2.2.2 Configure BTS Transmitter power of the TCH in the used timeslot """
+        return self.scpi.send_command("CONF:CHANnel:BTS %.2f"%float(power), False)
+
+    def ask_bts_tch_mode(self):
+        """ 2.2.2 Configured BTS Selection of modulation contents on the TCH
+            See set_bts_tch_mode() for details   """
+        return self.scpi.ask_str("CONF:SPEech:MODE?")
+
+    def set_bts_tch_mode(self, mode):
+        """ 2.2.2 Configure BTS Transmitter power of the TCH in the used timeslot
+            Supported values:
+              ECHO    - Loopback in the CMD with delay
+              LOOP    - Loopback in the CMD with minimum possible delay
+              PR9     - 2e9-1 PSR bit pattern
+              PR11    - 2e11-1 PSR bit pattern
+              PR15    - 2e15-1 PSR bit pattern
+              PR16    - 2e16-1 PSR bit pattern
+              HANDset - Speech coder/decoder mode (requires hardware option) """
+        return self.scpi.send_command("CONF:SPEech:MODE %s"%float(mode), False)
+
+    def ask_bts_tx_timing(self):
+        """ 2.2.2 Configured BTS Transmit timing (delay)
+            Valid in: IDLE, BIDL, BBCH  """
+        return self.scpi.ask_int("CONF:CHANnel:BTS?")
+
+    def set_bts_tch_timing(self, ta):
+        """ 2.2.2 Configure BTS Transmit timing (delay)
+            Valid in: IDLE, BIDL, BBCH  """
+        return self.scpi.send_command("CONF:CHANnel:BTS %d"%int(ta), False)
+
+    def ask_bts_tch_input_bandwidth(self):
+        """ 2.2.2 Configured BTS Input bandwidth for the TCH
+            See set_bts_tch_input_bandwidth() for details.
+            Valid in: ALL  """
+        return self.scpi.ask_str("CONF:CHANnel:BTS?")
+
+    def set_bts_tch_input_bandwidth(self, bw):
+        """ 2.2.2 Configure BTS Input bandwidth for the TCH
+            Note: the value is always set to default when changing to the BTCH state
+            Valid in: BTCH
+            Supported values:
+              NARRow   - narrowband (default for timing reference FIX/BCCH)
+              WIDE     - wideband (default for timing reference TRIG)  """
+        return self.scpi.send_command("CONF:CHANnel:BTS %s"%str(bw), False)
 
     #
     # 2.3 Burst Analysis
@@ -265,6 +327,7 @@ class cmd57(scpi_device):
 
     def ask_burst_power_arr(self):
         """ 7.3.2 Power Measurement / Power values of the entire burst (read)
+            Values are calculated at 1/4-bit steps and are returned in the range from bit index -10.0 to bit index +157.0. This results in 669 values.
             Valid in: BTCH, BAN
             Unit: dB  """
         return self.scpi.ask_float_list("READ:ARRay:BURSt:POWer?")
@@ -346,6 +409,16 @@ class cmd57(scpi_device):
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("FETCh:BURSt:PHASe:ERRor:PEAK?")
 
+    def ask_phase_err_arr(self):
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of the Total Burst (single-value measurment, execute)
+            Valid in: BTCH, MOD  """
+        return self.scpi.ask_float_list("READ:ARRay:BURSt:PHASe:ERRor?")
+
+    def fetch_phase_err_arr(self):
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of the Total Burst (single-value measurment, fetch)
+            Valid in: BTCH, MOD  """
+        return self.scpi.ask_float_list("FETCh:ARRay:BURSt:PHASe:ERRor?")
+
     #
     # 7.4.4 Phase and Frequency Errors / Frequency Error Measurement
     #
@@ -378,27 +451,39 @@ class cmd57(scpi_device):
             Return: (MATC | NMAT | INV) """
         return self.scpi.ask_str("CALCulate:LIMit:SPECtrum:SWITching:MATChing?")
 
+    #
+    # 7.5.3 Spectrum Measurements / Measurements
+    #
+
     def ask_spectrum_modulation(self):
         """ 7.5.3 Executing Spectrum Measurement (Modulation)
+            Returns 23 frequency offsets (in kHz): [-1600, -1400, -1200, -1000, -800, -600, -400, -250, -200, -100, 0, 100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
             Valid in: BTCH, MOD  """
         # TODO: LONG operation
         return self.scpi.ask_float_list("READ:ARRay:SPECtrum:MODulation?")
 
     def fetch_spectrum_modulation(self):
         """ 7.5.3 Executing Spectrum Measurement (Modulation)
+            Returns 23 frequency offsets (in kHz): [-1600, -1400, -1200, -1000, -800, -600, -400, -250, -200, -100, 0, 100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float_list("FETCh:ARRay:SPECtrum:MODulation?")
 
     def ask_spectrum_switching(self):
         """ 7.5.3 Executing Spectrum Measurement (Switching)
+            Returns 9 frequency offsets (in kHz): [-1800, -1200, -600, -400, 0, 400, 600, 1200, 1800]
             Valid in: BTCH, MOD  """
         # TODO: LONG operation
         return self.scpi.ask_float_list("READ:ARRay:SPECtrum:BTS:SWITching?")
 
     def fetch_spectrum_switching(self):
         """ 7.5.3 Executing Spectrum Measurement (Switching)
+            Returns 9 frequency offsets (in kHz): [-1800, -1200, -600, -400, 0, 400, 600, 1200, 1800]
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float_list("FETCh:ARRay:SPECtrum:BTS:SWITching?")
+
+    #
+    # 7.8 Other measurements
+    #
 
     def ask_peak_power(self):
         """ 7.8 Other measurements / Peak Power Measurement (read) """
@@ -423,6 +508,17 @@ class cmd57(scpi_device):
         if decode is not None: self.set_phase_decoding_mode(decode)
         if input_bandwidth is not None: self.set_ban_input_bandwidth(input_bandwidth)
         if trigger_mode is not None: self.set_ban_trigger_mode(trigger_mode)
+
+    def confiure_man(self, ccch_arfcn=None, tch_arfcn=None, tch_ts=None, tsc=None, expected_power=None, tch_tx_power=None, tch_mode=None, tch_timing=None, tch_input_bandwidth=None):
+        if ccch_arfcn is not None: self.set_bts_ccch_arfcn(ccch_arfcn)
+        if tch_arfcn is not None: self.set_bts_tch_arfcn(tch_arfcn)
+        if tch_ts is not None: self.set_bts_tch_ts(tch_ts)
+        if tsc is not None: self.set_bts_tsc(tsc)
+        if expected_power is not None: self.set_bts_expected_power(expected_power)
+        if tch_tx_power is not None: self.set_bts_tch_tx_power(tch_tx_power)
+        if tch_mode is not None: self.set_bts_tch_mode(tch_mode)
+        if tch_timing is not None: self.set_bts_tch_timing(tch_timing)
+        if tch_input_bandwidth is not None: self.set_bts_tch_input_bandwidth(tch_input_bandwidth)
 
 def rs232(port, **kwargs):
     """Quick helper to connect via RS232 port"""
