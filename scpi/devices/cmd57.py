@@ -80,6 +80,10 @@ class cmd57(scpi_device):
         """ 2.1 External Attenuation at RF Out 2 """
         return self.scpi.send_command("SOURce2:CORRection:LOSS %f" % att, False)
 
+    #
+    # 2.2.1 Signaling Parameters of the BTS
+    #
+
     def ask_bts_mcc(self):
         """ 2.2.1 Detected BTS MCC """
         return self.scpi.ask_int("SENSE:SIGN:IDEN:MCC?")
@@ -167,7 +171,7 @@ class cmd57(scpi_device):
 
     def ask_ban_input_bandwidth(self):
         """ 2.3 Burst Analysis (Module testing) Input Bandwidth for measurement of peak power """
-        return self.scpi.ask_float("CONF:BANalysis:POWer:BANDwidth:INPut1?")
+        return self.scpi.ask_str("CONF:BANalysis:POWer:BANDwidth:INPut1?")
 
     def set_ban_input_bandwidth(self, band):
         """ 2.3 Burst Analysis (Module testing) Input Bandwidth for measurement of peak power
@@ -178,7 +182,7 @@ class cmd57(scpi_device):
 
     def ask_ban_trigger_mode(self):
         """ 2.3 Burst Analysis (Module testing) Trigger mode """
-        return self.scpi.ask_float("CONF:BANalysis:TRIGger:MODE?")
+        return self.scpi.ask_str("CONF:BANalysis:TRIGger:MODE?")
 
     def set_ban_trigger_mode(self, mode):
         """ 2.3 Burst Analysis (Module testing) Trigger mode
