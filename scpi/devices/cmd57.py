@@ -281,13 +281,12 @@ class cmd57(scpi_device):
 
     def bcch_sync(self):
         """ 3 Perform Synchronization with BCCH or Wired Sync """
-        # TODO: Introduce longer timeout
         return self.scpi.send_command("PROCedure:SYNChronize", False)
 
     def ask_sync_state(self):
         """ 3 Selected Measurement State
-            See set_sync_state() for the list of supported modes
-        """
+            See set_sync_state() for the list of supported modes  """
+        # TODO: The command returns error -113: Undefined header
         return self.scpi.ask_str("PROCedure:BTSState?")
 
     def set_sync_state(self, state):
