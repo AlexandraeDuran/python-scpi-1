@@ -51,7 +51,7 @@ def show_mod_config(dev):
         print "  Ext atten RF In2:   %f" % dev.ask_ext_att_rf_in2()
 
 def show_mod_info(dev):
-    (pk_phase_err_match, avg_phase_err_match, freq_err_match) = dev.ask_phase_freq_match_avg()
+    (pk_phase_err_match, avg_phase_err_match, freq_err_match) = dev.ask_phase_freq_match()
     print "Module test - Burst Analysis measurements"
     print "  Peak power:         %s dBm" % format_float(dev.ask_peak_power())
     print "  Avg. burst power:   %s dBm" % format_float(dev.fetch_burst_power_avg())
