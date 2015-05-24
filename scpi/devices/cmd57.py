@@ -32,7 +32,10 @@ class cmd57(scpi_device):
         return self.scpi.ask_int("SENSE:SIGN:IDEN:MNC?")
 
     def ask_bts_bsic(self):
-        """ 2.2.1 Detected BTS BSIC """
+        """ 2.2.1 Detected BTS BSIC
+            Returned as two digit integer XY.
+            First digit  X - NCC
+            Second digit Y - BCC   """
         return self.scpi.ask_int("SENSE:SIGN:BSIC?")
 
     def ask_bts_ccch_arfcn(self):
@@ -111,12 +114,13 @@ class cmd57(scpi_device):
         """ 2.4 Test mode
             Supported modes:
               NONE        - No tes mode (switch on state)
-              MANual      - BTS test aka signaling test
-              MODultest   - Module test (same as BAN?)
+              MANual      - BTS test without signaling
+              SIGNal      - BTS test with signaling (requires option K30)
+              MODultest   - Module test (same as BAN?) (requires option B4)
               BANalysis   - Burst analysis (same as MOD?)
               RFM         - RF generator (same as RFG?)
               RFGenerator - RF generator (same as RFM?)
-              IQSPec      - IQ spectrum (requires hardware option)
+              IQSPec      - IQ spectrum (requires option K43)
         """
         return self.scpi.send_command("PROCedure:SEL %s"%str(mode), False)
 
@@ -198,12 +202,12 @@ class cmd57(scpi_device):
                     - Frequency error """
         return self.scpi.ask_str_list("CALCulate:LIMit:PHFR:TOLerance:MATChing:MAXimum?")
 
-    def ask_phase_phase_err_rms(self):
+    def ask_phase_err_rms(self):
         """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst RMS (single-value measurment, execute)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("READ:BURSt:PHASe:ERRor:RMS?")
 
-    def fetch_phase_phase_err_rms(self):
+    def fetch_phase_err_rms(self):
         """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst RMS (single-value measurment, fetch)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("FETCh:BURSt:PHASe:ERRor:RMS?")
@@ -223,7 +227,7 @@ class cmd57(scpi_device):
             Note: Supplies result for the last measurement
             Valid in: BTCH, MOD
             Return: (MATC | NMAT | INV) """
-        return self.scpi.ask_str_list("CALCulate:LIMit:SPECtrum:MODulation:MATChing?")
+        return self.scpi.ask_str("CALCulate:LIMit:SPECtrum:MODulation:MATChing?")
 
     def ask_spectrum_switching_match(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Query for observance of tolerances of the Spectrum (Switching)
