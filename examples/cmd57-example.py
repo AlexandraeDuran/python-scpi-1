@@ -44,7 +44,7 @@ def print_man_bbch_info(dev):
     print "  BSIC:             %d" % dev.ask_bts_bsic()
     print "  burst avg power:  %d dBm" % dev.ask_burst_power_avg()
 
-def print_man_btch_inf(dev):
+def print_man_btch_info(dev):
     print_mod_info(dev)
 
 def print_mod_config(dev):
