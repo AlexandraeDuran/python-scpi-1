@@ -19,9 +19,66 @@ class cmd57(scpi_device):
         """ List installed option """
         return self.scpi.ask_str_list("*OPT?")
 
+    #
+    # 2.1 Input and Output
+    #
+
     def ask_io_used(self):
-        """ 2.1 Inputs and outputs used """
-        return self.scpi.ask_str("ROUT:IOC?")
+        """ 2.1 Input and output used
+            See set_io_used() for supported values """
+        return self.scpi.ask_str("ROUTe:IOConnector?")
+
+    def set_io_used(self, io):
+        """ 2.1 Input and output used
+            Supported values:
+              I1O1  - Input: RF In/Out   Output: RF In/Out
+              I1O2  - Input: RF In/Out   Output: RF Out 2
+              I2O1  - Input: RF In 2     Output: RF In/Out
+              I2O2  - Input: RF In 2     Output: RF Out 2     """
+        return self.scpi.send_command("ROUTe:IOConnector %s" % io, False)
+
+    def parse_io_str(io):
+        """ Returns array with [RF_In_num, RF_Out_num] """
+        if len(io) != 4:
+            return None
+        return [int(io[1:2]), int(io[3:4])]
+
+    def parse_io_str(in_num, out_num):
+        if not in_num in [0,1] or not out_num in [0,1]:
+            return None
+        return "I%dO%d" % (in_num, out_num)
+
+    def ask_ext_att_rf_in1(self):
+        """ 2.1 External Attenuation at RF In 1 """
+        return self.scpi.ask_float("SENSe1:CORRection:LOSS?")
+
+    def set_ext_att_rf_in1(self, att):
+        """ 2.1 External Attenuation at RF In 1 """
+        return self.scpi.send_command("SENSe1:CORRection:LOSS %f" % att, False)
+
+    def ask_ext_att_rf_out1(self):
+        """ 2.1 External Attenuation at RF Out 1 """
+        return self.scpi.ask_float("SOURce1:CORRection:LOSS?")
+
+    def set_ext_att_rf_out1(self, att):
+        """ 2.1 External Attenuation at RF Out 1 """
+        return self.scpi.send_command("SOURce1:CORRection:LOSS %f" % att, False)
+
+    def ask_ext_att_rf_in2(self):
+        """ 2.1 External Attenuation at RF In 2 """
+        return self.scpi.ask_float("SENSe2:CORRection:LOSS?")
+
+    def set_ext_att_rf_in2(self, att):
+        """ 2.1 External Attenuation at RF In 2 """
+        return self.scpi.send_command("SENSe2:CORRection:LOSS %f" % att, False)
+
+    def ask_ext_att_rf_out2(self):
+        """ 2.1 External Attenuation at RF Out 2 """
+        return self.scpi.ask_float("SOURce2:CORRection:LOSS?")
+
+    def set_ext_att_rf_out2(self, att):
+        """ 2.1 External Attenuation at RF Out 2 """
+        return self.scpi.send_command("SOURce2:CORRection:LOSS %f" % att, False)
 
     def ask_bts_mcc(self):
         """ 2.2.1 Detected BTS MCC """
@@ -67,8 +124,12 @@ class cmd57(scpi_device):
         return self.scpi.ask_int("CONF:CHAN:BTS:TSC?")
 
     def set_bts_tsc(self, tsc):
-        """ 2.2.2 Configure BTS TSC """
+        """ 2.2.2 Configur BTS TSC """
         return self.scpi.send_command("CONF:CHAN:BTS:TSC %d"%int(tsc), False)
+
+    #
+    # 2.3 Burst Analysis
+    #
 
     def ask_ban_arfcn(self):
         """ 2.3 Burst Analysis (Module testing) / Channel number (ARFCN) """
@@ -97,12 +158,38 @@ class cmd57(scpi_device):
         return self.scpi.send_command("CONF:CHAN:BANalysis:TSC %d"%int(tsc), False)
 
     def ask_ban_expected_power(self):
-        """ 2.3 Burst Analysis (Module testing) TSC """
+        """ 2.3 Burst Analysis (Module testing) Expected power (of BTS) """
         return self.scpi.ask_float("CONF:BANalysis:POWer:EXPected?")
 
     def set_ban_expected_power(self, pwr):
-        """ 2.3 Burst Analysis (Module testing) TSC """
+        """ 2.3 Burst Analysis (Module testing) Expected power (of BTS) """
         return self.scpi.send_command("CONF:BANalysis:POWer:EXPected %f"%float(pwr), False)
+
+    def ask_ban_input_bandwidth(self):
+        """ 2.3 Burst Analysis (Module testing) Input Bandwidth for measurement of peak power """
+        return self.scpi.ask_float("CONF:BANalysis:POWer:BANDwidth:INPut1?")
+
+    def set_ban_input_bandwidth(self, band):
+        """ 2.3 Burst Analysis (Module testing) Input Bandwidth for measurement of peak power
+            Supported values:
+              NARRow - Narrowband measurement
+              WIDE   - Wideband measurement   """
+        return self.scpi.send_command("CONF:BANalysis:POWer:BANDwidth:INPut1 %s"%band, False)
+
+    def ask_ban_trigger_mode(self):
+        """ 2.3 Burst Analysis (Module testing) Trigger mode """
+        return self.scpi.ask_float("CONF:BANalysis:TRIGger:MODE?")
+
+    def set_ban_trigger_mode(self, mode):
+        """ 2.3 Burst Analysis (Module testing) Trigger mode
+            Supported values:
+              POWer    - Trigger on rising signal edge
+              FREerun  - Trigger without slope   """
+        return self.scpi.send_command("CONF:BANalysis:TRIGger:MODE %s"%mode, False)
+
+    #
+    # 2.4 Network and Test Mode
+    #
 
     def ask_test_mode(self):
         """ 2.4 Test mode
