@@ -15,14 +15,14 @@ def format_int(val):
 def format_float(val):
     return "%6.2f" % val
 
-def show_sys_info(dev):
+def print_sys_info(dev):
     print "System version:       %s" % " ".join(dev.identify())
     print "Installed options:    %s" % " ".join(dev.ask_installed_options())
 
-def show_sys_config(dev):
+def print_sys_config(dev):
     print "RF input/output port: %s" % dev.ask_io_used()
 
-def show_bts_config(dev):
+def print_man_config(dev):
     print "Manual BTS test - Synchronized mode (no signaling)"
     print "  CCCH ARFCN:       %s" % format_int(dev.ask_bts_ccch_arfcn())
     print "  TCH ARFCN:        %s" % format_int(dev.ask_bts_tch_arfcn())
@@ -33,13 +33,21 @@ def show_bts_config(dev):
     print "  Timing advance:   %s qbits" % format_int(dev.ask_bts_tch_timing())
     print "  Input bandwidth:  %s" % dev.ask_bts_tch_input_bandwidth()
 
-def show_bts_info(dev):
-    print "BTS MCC:              %d" % dev.ask_bts_mcc()
-    print "BTS MNC:              %d" % dev.ask_bts_mcc()
-    print "BTS BSIC:             %d" % dev.ask_bts_bsic()
-    print "BTS burst avg power:  %d dBm" % dev.ask_burst_power_avg()
+def print_man_bidl_info(dev):
+    print "Manual BTS test - Synchronized mode (no signaling)"
+    print "  Peak power:         %s dBm" % format_float(dev.ask_peak_power())
 
-def show_mod_config(dev):
+def print_man_bbch_info(dev):
+    print "Manual BTS test - Synchronized mode (no signaling)"
+    print "  MCC:              %d" % dev.ask_bts_mcc()
+    print "  MNC:              %d" % dev.ask_bts_mcc()
+    print "  BSIC:             %d" % dev.ask_bts_bsic()
+    print "  burst avg power:  %d dBm" % dev.ask_burst_power_avg()
+
+def print_man_btch_inf(dev):
+    print_mod_info(dev)
+
+def print_mod_config(dev):
     rf_in_num = dev.parse_io_str(dev.ask_io_used())[0]
     print "Module test - Burst Analysis configuration"
     print "  Expected power:     %f dBm" % dev.ask_ban_expected_power()
@@ -55,7 +63,7 @@ def show_mod_config(dev):
     else:
         print "  Ext atten RF In2:   %f" % dev.ask_ext_att_rf_in2()
 
-def show_mod_info(dev):
+def print_mod_info(dev):
     (pk_phase_err_match, avg_phase_err_match, freq_err_match) = dev.ask_phase_freq_match()
     print "Module test - Burst Analysis measurements"
     print "  Peak power:         %s dBm" % format_float(dev.ask_peak_power())
@@ -68,35 +76,9 @@ def show_mod_info(dev):
     print "  Spectrum modulation: %s" % dev.ask_spectrum_modulation_match()
     print "  Spectrum switching:  %s" % dev.ask_spectrum_switching_match()
 
-def show_cur_mode(dev):
+def print_cur_mode(dev):
     print "Current test mode:    %s" % dev.ask_test_mode()
     print "Current device state: %s" % dev.ask_dev_state()
-
-def switch_to_x(dev, mode):
-    if dev.ask_test_mode() != mode:
-        dev.set_test_mode("NONE")
-        dev.set_test_mode(mode)
-
-def switch_to_mod(dev):
-    _switch_to_x(dev, "MOD")
-
-def switch_to_ban(dev):
-    _switch_to_x(dev, "BAN")
-
-def switch_to_man(dev):
-    _switch_to_x(dev, "MAN")
-
-def switch_to_man_bbch(dev):
-    switch_to_man(dev)
-    if dev.ask_dev_state() != "BBCH":
-        dev.bcch_sync()
-
-def switch_to_man_btch(dev):
-    switch_to_man(dev)
-    if dev.ask_dev_state() != "BTCH":
-        if dev.ask_dev_state() != "BBCH":
-            dev.bcch_sync()
-        dev.set_sync_state("BTCH")
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -111,11 +93,11 @@ if __name__ == '__main__':
     dev.confiure_man(ccch_arfcn=100, tch_arfcn=100, tch_ts=0, tsc=7, expected_power=37, tch_tx_power=-50, tch_mode='LOOP', tch_timing=0)
     dev.configure_mod(expected_power=37, arfcn=100, tsc=7, decode='STANdard', input_bandwidth='NARRow', trigger_mode='POWer')
 
-    show_sys_info(dev)
-    show_sys_config(dev)
-    show_bts_config(dev)
-    show_mod_config(dev)
-    show_cur_mode(dev)
+    print_sys_info(dev)
+    print_sys_config(dev)
+    print_bts_config(dev)
+    print_mod_config(dev)
+    print_cur_mode(dev)
 
     print
     print "Expecting your input now"
