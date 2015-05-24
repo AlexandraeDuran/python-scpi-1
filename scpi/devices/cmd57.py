@@ -43,7 +43,7 @@ class cmd57(scpi_device):
             return None
         return [int(io[1:2]), int(io[3:4])]
 
-    def parse_io_str(self, in_num, out_num):
+    def make_io_str(self, in_num, out_num):
         if not in_num in [0,1] or not out_num in [0,1]:
             return None
         return "I%dO%d" % (in_num, out_num)
