@@ -10,10 +10,10 @@ import atexit
 
 def format_int(val):
     if val is None: return "nan"
-    else: return "%d" % val
+    else: return "%6d" % val
 
 def format_float(val):
-    return "%f" % val
+    return "%6.2f" % val
 
 def show_sys_info(dev):
     print "System version:       %s" % " ".join(dev.identify())
@@ -23,10 +23,15 @@ def show_sys_config(dev):
     print "RF input/output port: %s" % dev.ask_io_used()
 
 def show_bts_config(dev):
-    print "BTS CCCH ARFCN:       %d" % dev.ask_bts_ccch_arfcn()
-    print "BTS TCH ARFCN:        %d" % dev.ask_bts_tch_arfcn()
-    print "BTS TCH timeslot:     %d" % dev.ask_bts_tch_ts()
-    print "BTS TSC:              %d" % dev.ask_bts_tsc()
+    print "Manual BTS test - Synchronized mode (no signaling)"
+    print "  CCCH ARFCN:       %s" % format_int(dev.ask_bts_ccch_arfcn())
+    print "  TCH ARFCN:        %s" % format_int(dev.ask_bts_tch_arfcn())
+    print "  TCH timeslot:     %s" % format_int(dev.ask_bts_tch_ts())
+    print "  Expected power:   %s dBm" % format_float(dev.ask_bts_expected_power())
+    print "  Used TS power:    %s dBm" % format_float(dev.ask_bts_tch_tx_power())
+    print "  Mode:             %s" % dev.ask_bts_tch_mode()
+    print "  Timing advance:   %s qbits" % format_int(dev.ask_bts_tch_timing())
+    print "  Input bandwidth:  %s" % format_int(dev.ask_bts_tch_input_bandwidth())
 
 def show_bts_info(dev):
     print "BTS MCC:              %d" % dev.ask_bts_mcc()
@@ -77,6 +82,7 @@ if __name__ == '__main__':
     dev = cmd57.rs232(sys.argv[1], rtscts=True)
     atexit.register(dev.quit)
 
+    dev.confiure_man(ccch_arfcn=100, tch_arfcn=100, tch_ts=0, tsc=7, expected_power=37, tch_tx_power=-50, tch_mode='LOOP', tch_timing=0)
     dev.configure_mod(expected_power=37, arfcn=100, tsc=7, decode='STANdard', input_bandwidth='NARRow', trigger_mode='POWer')
 
     show_sys_info(dev)
