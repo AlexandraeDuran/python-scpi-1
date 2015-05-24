@@ -182,7 +182,7 @@ class cmd57(scpi_device):
         """ 2.2.2 Configured BTS Input bandwidth for the TCH
             See set_bts_tch_input_bandwidth() for details.
             Valid in: ALL  """
-        return self.scpi.ask_str("CONF:CHANnel:BTS?")
+        return self.scpi.ask_str("PROCedure:SET:POWer:BANDwidth:INPut?")
 
     def set_bts_tch_input_bandwidth(self, bw):
         """ 2.2.2 Configure BTS Input bandwidth for the TCH
@@ -191,7 +191,7 @@ class cmd57(scpi_device):
             Supported values:
               NARRow   - narrowband (default for timing reference FIX/BCCH)
               WIDE     - wideband (default for timing reference TRIG)  """
-        return self.scpi.send_command("CONF:CHANnel:BTS %s"%str(bw), False)
+        return self.scpi.send_command("PROCedure:SET:POWer:BANDwidth:INPut %s"%str(bw), False)
 
     #
     # 2.3 Burst Analysis
