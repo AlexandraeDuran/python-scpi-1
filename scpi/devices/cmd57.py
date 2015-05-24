@@ -400,8 +400,10 @@ def rs232(port, **kwargs):
 
     # Try opening at 2400 baud (default setting) and switch to 9600 baud
     serial_port = pyserial.Serial(port, 2400, timeout=0, **kwargs)
-    transport = serial_transport(serial_port)
-    transport.send_command(":SYSTem:COMMunicate:SERial:BAUD 9600")
+    serial_port.write(":SYSTem:COMMunicate:SERial:BAUD 9600"+"\n")
+#    transport = serial_transport(serial_port)
+#    transport.send_command(":SYSTem:COMMunicate:SERial:BAUD 9600")
+#    transport.quit()
 #    dev = cmd57(transport)
 #    dev.scpi.command_timeout = 0.1 # Seconds
 #    try:
