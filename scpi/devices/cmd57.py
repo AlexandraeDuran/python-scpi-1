@@ -170,14 +170,16 @@ class cmd57(scpi_device):
         return self.scpi.send_command("CONF:BANalysis:POWer:EXPected %f"%float(pwr), False)
 
     def ask_ban_input_bandwidth(self):
-        """ 2.3 Burst Analysis (Module testing) Input Bandwidth for measurement of peak power """
+        """ 2.3 Burst Analysis (Module testing) Input Bandwidth for measurement of peak power
+            See set_ban_input_bandwidth() for details """
         return self.scpi.ask_str("CONF:BANalysis:POWer:BANDwidth:INPut1?")
 
     def set_ban_input_bandwidth(self, band):
         """ 2.3 Burst Analysis (Module testing) Input Bandwidth for measurement of peak power
+            Used only with input RF IN/OUT (aka RF In1) selected!
             Supported values:
-              NARRow - Narrowband measurement
-              WIDE   - Wideband measurement   """
+              NARRow - Narrowband measurement (IF power meter)
+              WIDE   - Wideband measurement (RF power meter)  """
         return self.scpi.send_command("CONF:BANalysis:POWer:BANDwidth:INPut1 %s"%band, False)
 
     def ask_ban_trigger_mode(self):
@@ -266,6 +268,10 @@ class cmd57(scpi_device):
             Unit: dB  """
         return self.scpi.ask_float_list("FETCh:ARRay:BURSt:POWer?")
 
+    #
+    # 7.4.1 Phase and Frequency Errors / Tolerance values
+    #
+
     def ask_phase_freq_match(self):
         """ 7.4.1 Phase and Frequency Errors / Tolerance values / Query for observance of tolerances (single-value measurment)
             Valid in: BBCH, BTCH, BAN, MOD
@@ -293,6 +299,26 @@ class cmd57(scpi_device):
                     - Frequency error """
         return self.scpi.ask_str_list("CALCulate:LIMit:PHFR:TOLerance:MATChing:MAXimum?")
 
+    #
+    # 7.4.2 Phase and Frequency Errors / Test Parameters for Phase and Frequency Error Measurment
+    #
+
+    def ask_phase_decoding_mode(self):
+        """ 7.4.2 Phase and Frequency Errors / Decoding mode
+            See set_phase_decoding_mode() for details """
+        return self.scpi.ask_str("CONF:DECoding:MODE?")
+
+    def set_phase_decoding_mode(self, mode):
+        """ 7.4.2 Phase and Frequency Errors / Decoding mode
+            Supported values:
+              STANdard  - Guard and tail bits assumed to be set according to the Standard
+              GATBits   - Guard and tail bits decoded just as normal data bits without assumptions   """
+        return self.scpi.send_command("CONF:DECoding:MODE %s"%mode, False)
+
+    #
+    # 7.4.3 Phase and Frequency Errors / Phase Error Measurement
+    #
+
     def ask_phase_err_rms(self):
         """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst RMS (single-value measurment, execute)
             Valid in: BTCH, MOD  """
@@ -303,12 +329,12 @@ class cmd57(scpi_device):
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("FETCh:BURSt:PHASe:ERRor:RMS?")
 
-    def ask_phase_phase_err_pk(self):
+    def ask_phase_err_pk(self):
         """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst Peak (single-value measurment, execute)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("READ:BURSt:PHASe:ERRor:PEAK?")
 
-    def fetch_phase_phase_err_pk(self):
+    def fetch_phase_err_pk(self):
         """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst Peak (single-value measurment, fetch)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("FETCh:BURSt:PHASe:ERRor:PEAK?")
