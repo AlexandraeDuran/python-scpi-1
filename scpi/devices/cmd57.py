@@ -168,7 +168,7 @@ class cmd57(scpi_device):
               HANDset - Speech coder/decoder mode (requires hardware option) """
         return self.scpi.send_command("CONF:SPEech:MODE %s"%str(mode), False)
 
-    def ask_bts_tx_timing(self):
+    def ask_bts_tch_timing(self):
         """ 2.2.2 Configured BTS Transmit timing (delay)
             Valid in: IDLE, BIDL, BBCH  """
         return self.scpi.ask_int("CONF:CHANnel:BTS?")
