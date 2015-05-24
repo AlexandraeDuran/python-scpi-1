@@ -8,6 +8,14 @@ import os,sys
 from scpi.devices import cmd57
 import atexit
 
+def format_int(val):
+    if val is None: return "NAN"
+    else: return "%d" % val
+
+def format_float(val):
+    if val is None: return "NAN"
+    else: return "%f" % val
+
 def show_sys_info(dev):
     print "System version:       %s" % " ".join(dev.identify())
     print "Installed options:    %s" % " ".join(dev.ask_installed_options())
@@ -46,12 +54,12 @@ def show_mod_config(dev):
 def show_mod_info(dev):
     (pk_phase_err_match, avg_phase_err_match, freq_err_match) = dev.ask_phase_freq_match_avg()
     print "Module test - Burst Analysis measurements"
-    print "  Peak power:         %f dBm" % dev.ask_peak_power()
-    print "  Avg. burst power:   NA dBm"
-    print "  Power ramp:         NA"
-    print "  Frequency error:    NA Hz  (%s)" % freq_err_match
-    print "  Phase Error (PK):   NA deg (%s)" % pk_phase_err_match
-    print "  Phase Error (AVG):  NA deg (%s)" % avg_phase_err_match
+    print "  Peak power:         %s dBm" % format_float(dev.ask_peak_power())
+    print "  Avg. burst power:   %s dBm" % format_int(dev.fetch_burst_power_avg())
+    print "  Power ramp:         %s" % dev.ask_power_mask_match()
+    print "  Frequency error:    %s Hz  (%s)" % (format_float(dev.fetch_freq_err()), freq_err_match)
+    print "  Phase Error (PK):   %s deg (%s)" % (format_float(dev.fetch_phase_err_pk()), pk_phase_err_match)
+    print "  Phase Error (AVG):  %s deg (%s)" % (format_float(dev.fetch_phase_err_rms()), avg_phase_err_match)
     print "Module test - Extra measurements"
     print "  Spectrum modulation: %s" % dev.ask_spectrum_modulation_match()
     print "  Spectrum switching:  %s" % dev.ask_spectrum_switching_match()
