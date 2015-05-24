@@ -8,7 +8,7 @@ class cmd57(scpi_device):
     def __init__(self, transport, *args, **kwargs):
         """Initializes a device for the given transport"""
         super(cmd57, self).__init__(transport, *args, **kwargs)
-        self.scpi.command_timeout = 5 # Seconds
+        self.scpi.command_timeout = 60 # Seconds
         self.scpi.ask_default_wait = 0 # Seconds
 
     ######################################
@@ -338,6 +338,24 @@ class cmd57(scpi_device):
         """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst Peak (single-value measurment, fetch)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("FETCh:BURSt:PHASe:ERRor:PEAK?")
+
+    #
+    # 7.4.4 Phase and Frequency Errors / Frequency Error Measurement
+    #
+
+    def ask_freq_err(self):
+        """ 7.4.3 Phase and Frequency Errors / Total Frequency Error of Burst (single-value measurment, execute)
+            Valid in: BTCH, MOD  """
+        return self.scpi.ask_int("READ:BURSt:FREQ:ERRor?")
+
+    def fetch_freq_err(self):
+        """ 7.4.3 Phase and Frequency Errors / Total Frequency Error of Burst (single-value measurment, fetch)
+            Valid in: BTCH, MOD  """
+        return self.scpi.ask_int("FETCh:BURSt:FREQ:ERRor?")
+
+    #
+    # 7.5.1 Spectrum Measurements / Tolerance values
+    #
 
     def ask_spectrum_modulation_match(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Query for observance of tolerances of the Spectrum (Modulation)
