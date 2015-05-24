@@ -238,11 +238,18 @@ class cmd57(scpi_device):
         """
         return self.scpi.send_command("PROCedure:BTSState %s"%str(state), False)
 
+    #
+    # 7.3.2 Power Tolerance Measurement
+    #
+
     def ask_power_mask_match(self):
         """ 7.3.1 Power Tolerance values / Query for observance of the tolerances of the power/time template
-            Valid in: BTCH, MOD
-            Unit: dBm  """
+            Valid in: BTCH, MOD  """
         return self.scpi.ask_str("CALC:LIMit:POWer:MATChing?")
+
+    #
+    # 7.3.2 Power Measurement
+    #
 
     def ask_burst_power_avg(self):
         """ 7.3.2 Power Measurement / Average power of the burst (read)
