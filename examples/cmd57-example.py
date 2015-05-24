@@ -35,7 +35,7 @@ def show_mod_config(dev):
     print "  Decode:             NA"
     print "  Peak power bandw:   %s" % dev.ask_ban_input_bandwidth()
     print "  Trigger mode:       %s" % dev.ask_ban_trigger_mode()
-    print "  Used RF Input:      %d" % parse_io_str(dev.ask_io_used())[0]
+    print "  Used RF Input:      %d" % dev.parse_io_str(dev.ask_io_used())[0]
     print "  Ext atten RF In1:   %f" % dev.ask_ext_att_rf_in1()
     print "  Ext atten RF In2:   %f" % dev.ask_ext_att_rf_in2()
 
