@@ -33,10 +33,17 @@ def show_mod_config(dev):
     print "Module test exp.power %f dBm" % dev.ask_ban_expected_power()
 
 def show_mod_info(dev):
-    print "Module peak power:    %f dBm" % dev.ask_peak_power()
-    print "Module pk.phase, avg.phase, freq: %s" % ", ".join(dev.ask_phase_freq_match_avg())
-    print "Module spectrum modulation: %s" % dev.ask_spectrum_modulation_match()
-    print "Module spectrum switching: %s" % dev.ask_spectrum_switching_match()
+    (pk_phase_err, avg_phase_err, freq_err) = dev.ask_phase_freq_match_avg()
+    print "Module test - Burst Analysis"
+    print "  Peak power:         %f dBm" % dev.ask_peak_power()
+    print "  Avg. burst power:   NA dBm"
+    print "  Power ramp:         NA"
+    print "  Frequency error:    %d Hz" % freq_err
+    print "  Phase Error (PK):   %d deg" % pk_phase_err
+    print "  Phase Error (AVG):  %d deg" % avg_phase_err
+    print "Module test - Extra"
+    print "  Spectrum modulation: %s" % dev.ask_spectrum_modulation_match()
+    print "  Spectrum switching:  %s" % dev.ask_spectrum_switching_match()
 
 def show_cur_mode(dev):
     print "Current test mode:    %s" % dev.ask_test_mode()
