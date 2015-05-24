@@ -70,6 +70,8 @@ if __name__ == '__main__':
     dev = cmd57.rs232(sys.argv[1], rtscts=True)
     atexit.register(dev.quit)
 
+    dev.configure_mod(expected_power=37, arfcn=100, tsc=7, decode='STANdard', input_bandwidth='WIDE', trigger_mode='POWer')
+
     show_sys_info(dev)
     show_sys_config(dev)
     show_bts_config(dev)
