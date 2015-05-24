@@ -171,12 +171,12 @@ class cmd57(scpi_device):
     def ask_bts_tch_timing(self):
         """ 2.2.2 Configured BTS Transmit timing (delay)
             Valid in: IDLE, BIDL, BBCH  """
-        return self.scpi.ask_float("CONF:CHANnel:BTS?")
+        return self.scpi.ask_int("CONF:BTS:TRANsmit:TIMing?")
 
     def set_bts_tch_timing(self, ta):
         """ 2.2.2 Configure BTS Transmit timing (delay)
             Valid in: IDLE, BIDL, BBCH  """
-        return self.scpi.send_command("CONF:CHANnel:BTS %f"%float(ta), False)
+        return self.scpi.send_command("CONF:BTS:TRANsmit:TIMing %d"%int(ta), False)
 
     def ask_bts_tch_input_bandwidth(self):
         """ 2.2.2 Configured BTS Input bandwidth for the TCH
