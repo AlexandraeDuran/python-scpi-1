@@ -47,6 +47,9 @@ def print_man_bbch_info(dev):
 def print_man_btch_info(dev):
     print_mod_info(dev)
 
+def update_man_btch_info(dev):
+    update_mod_info(dev)
+
 def print_mod_config(dev):
     rf_in_num = dev.parse_io_str(dev.ask_io_used())[0]
     print "Module test - Burst Analysis configuration"
@@ -75,6 +78,10 @@ def print_mod_info(dev):
     print "Module test - Extra measurements"
     print "  Spectrum modulation: %s" % dev.ask_spectrum_modulation_match()
     print "  Spectrum switching:  %s" % dev.ask_spectrum_switching_match()
+
+def update_mod_info(dev):
+    dev.ask_burst_power_avg()
+    print_mod_info(dev)
 
 def print_cur_mode(dev):
     print "Current test mode:    %s" % dev.ask_test_mode()
