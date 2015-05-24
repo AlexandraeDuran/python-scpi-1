@@ -401,14 +401,15 @@ def rs232(port, **kwargs):
     # Try opening at 2400 baud (default setting) and switch to 9600 baud
     serial_port = pyserial.Serial(port, 2400, timeout=0, **kwargs)
     transport = serial_transport(serial_port)
-    dev = cmd57(transport)
-    dev.scpi.command_timeout = 0.1 # Seconds
-    try:
-        dev.scpi.send_command_unchecked(":SYSTem:COMMunicate:SERial:BAUD 9600", expect_response=False)
-    except:
-        # It's ok to fail, because we can already be at 9600
-        pass
-    dev.quit()
+    transport.send_command(":SYSTem:COMMunicate:SERial:BAUD 9600")
+#    dev = cmd57(transport)
+#    dev.scpi.command_timeout = 0.1 # Seconds
+#    try:
+#        dev.scpi.send_command_unchecked(":SYSTem:COMMunicate:SERial:BAUD 9600", expect_response=False)
+#    except:
+#        # It's ok to fail, because we can already be at 9600
+#        pass
+#    dev.quit()
 
     # Now we should be safe to open at 9600 baud
     serial_port = pyserial.Serial(port, 9600, timeout=0, **kwargs)
