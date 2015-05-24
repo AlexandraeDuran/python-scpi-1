@@ -28,16 +28,20 @@ def show_bts_info(dev):
     print "BTS burst avg power:  %d dBm" % dev.ask_burst_power_avg()
 
 def show_mod_config(dev):
+    rf_in_num = dev.parse_io_str(dev.ask_io_used())[0]
     print "Module test - Burst Analysis configuration"
     print "  Expected power:     %f dBm" % dev.ask_ban_expected_power()
     print "  RF Channel:         %d" % dev.ask_ban_arfcn()
     print "  Training sequence:  %d" % dev.ask_ban_tsc()
-    print "  Decode:             NA"
-    print "  Peak power bandw:   %s" % dev.ask_ban_input_bandwidth()
+    print "  Decode:             %s" % dev.ask_phase_decoding_mode()
+    if rf_in_num == 1:
+        print "  Peak power bandw:   %s" % dev.ask_ban_input_bandwidth()
     print "  Trigger mode:       %s" % dev.ask_ban_trigger_mode()
-    print "  Used RF Input:      %d" % dev.parse_io_str(dev.ask_io_used())[0]
-    print "  Ext atten RF In1:   %f" % dev.ask_ext_att_rf_in1()
-    print "  Ext atten RF In2:   %f" % dev.ask_ext_att_rf_in2()
+    print "  Used RF Input:      %d" % rf_in_num
+    if rf_in_num == 1:
+        print "  Ext atten RF In1:   %f" % dev.ask_ext_att_rf_in1()
+    else:
+        print "  Ext atten RF In2:   %f" % dev.ask_ext_att_rf_in2()
 
 def show_mod_info(dev):
     (pk_phase_err_match, avg_phase_err_match, freq_err_match) = dev.ask_phase_freq_match_avg()
