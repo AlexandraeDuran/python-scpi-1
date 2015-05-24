@@ -519,6 +519,34 @@ class cmd57(scpi_device):
         if tch_timing is not None: self.set_bts_tch_timing(tch_timing)
         if tch_input_bandwidth is not None: self.set_bts_tch_input_bandwidth(tch_input_bandwidth)
 
+
+    def _switch_to_x(self, mode):
+        if self.ask_test_mode() != mode:
+            self.set_test_mode("NONE")
+            self.set_test_mode(mode)
+
+    def switch_to_mod(self):
+        self._switch_to_x("MOD")
+
+    def switch_to_ban(self):
+        self._switch_to_x("BAN")
+
+    def switch_to_man(self):
+        self._switch_to_x("MAN")
+
+    def switch_to_man_bbch(self):
+        self.switch_to_man()
+        if self.ask_dev_state() != "BBCH":
+            self.bcch_sync()
+
+    def switch_to_man_btch(self):
+        self.switch_to_man()
+        if self.ask_dev_state() != "BTCH":
+            if self.ask_dev_state() != "BBCH":
+                self.bcch_sync()
+            self.set_sync_state("BTCH")
+
+
 def rs232(port, **kwargs):
     """Quick helper to connect via RS232 port"""
     import serial as pyserial
