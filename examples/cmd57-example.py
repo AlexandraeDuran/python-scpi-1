@@ -31,7 +31,7 @@ def show_bts_config(dev):
     print "  Used TS power:    %s dBm" % format_float(dev.ask_bts_tch_tx_power())
     print "  Mode:             %s" % dev.ask_bts_tch_mode()
     print "  Timing advance:   %s qbits" % format_float(dev.ask_bts_tch_timing())
-    print "  Input bandwidth:  %s" % format_int(dev.ask_bts_tch_input_bandwidth())
+    print "  Input bandwidth:  %s" % dev.ask_bts_tch_input_bandwidth()
 
 def show_bts_info(dev):
     print "BTS MCC:              %d" % dev.ask_bts_mcc()
