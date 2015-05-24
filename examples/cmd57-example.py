@@ -32,7 +32,7 @@ def show_mod_config(dev):
     print "  Expected power:     %f dBm" % dev.ask_ban_expected_power()
     print "  RF Channel:         %d" % dev.ask_ban_arfcn()
     print "  Training sequence:  %d" % dev.ask_ban_tsc()
-    print "  Decode:             %s" % dev.
+    print "  Decode:             NA"
     print "  Peak power bandw:   %s" % dev.ask_ban_input_bandwidth()
     print "  Trigger mode:       %s" % dev.ask_ban_trigger_mode()
     print "  Used RF Input:      %d" % parse_io_str(dev.ask_io_used())[0]
