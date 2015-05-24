@@ -37,13 +37,13 @@ class cmd57(scpi_device):
               I2O2  - Input: RF In 2     Output: RF Out 2     """
         return self.scpi.send_command("ROUTe:IOConnector %s" % io, False)
 
-    def parse_io_str(io):
+    def parse_io_str(self, io):
         """ Returns array with [RF_In_num, RF_Out_num] """
         if len(io) != 4:
             return None
         return [int(io[1:2]), int(io[3:4])]
 
-    def parse_io_str(in_num, out_num):
+    def parse_io_str(self, in_num, out_num):
         if not in_num in [0,1] or not out_num in [0,1]:
             return None
         return "I%dO%d" % (in_num, out_num)
