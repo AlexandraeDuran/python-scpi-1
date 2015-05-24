@@ -391,7 +391,13 @@ class cmd57(scpi_device):
     ###   High level functions
     ######################################
 
-
+    def configure_mod(self, expected_power=None, arfcn=None, tsc=None, decode=None, input_bandwidth=None, trigger_mode=None):
+        if expected_power is not None: self.set_ban_expected_power(expected_power)
+        if arfcn is not None: self.set_ban_arfcn(arfcn)
+        if tsc is not None: self.set_ban_tsc(tsc)
+        if decode is not None: self.set_phase_decoding_mode(decode)
+        if input_bandwidth is not None: self.set_ban_input_bandwidth(input_bandwidth)
+        if trigger_mode is not None: self.set_ban_trigger_mode(trigger_mode)
 
 def rs232(port, **kwargs):
     """Quick helper to connect via RS232 port"""
