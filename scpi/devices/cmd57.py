@@ -12,6 +12,17 @@ class cmd57(scpi_device):
         self.scpi.ask_default_wait = 0 # Seconds
 
     ######################################
+    ###   Helper functions
+    ######################################
+
+    def _format_float_list(val_list):
+        return ",".join(["%.2f"%x for x in val_list])
+    def _format_int_list(val_list):
+        return ",".join(["%d"%x for x in val_list])
+    def _format_str_list(val_list):
+        return ",".join(val_list)
+
+    ######################################
     ###   Low level functions
     ######################################
 
@@ -448,17 +459,18 @@ class cmd57(scpi_device):
 
     def ask_spectrum_modulation_tolerance_abs(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Modulation)
+            Returns a list of 2 values. (UNDOCUMENTED)
             Supported values: -100.0 to 5.0 dBm
             Default value: -57.0 dBm
             Valid in: ALL  """
-        return self.scpi.ask_float("CALCulate:LIMit:SPECtrum:MODulation:ABSolute?")
+        return self.scpi.ask_float_list("CALCulate:LIMit:SPECtrum:MODulation:ABSolute?")
 
-    def set_spectrum_modulation_tolerance_abs(self, dbm):
+    def set_spectrum_modulation_tolerance_abs(self, dbm_list):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Modulation)
             Supported values: -100.0 to 5.0 dBm
             Default value: -57.0 dBm
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:ABSolute %f" % dbm, False)
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:ABSolute %s" % self._format_float_list(dbm_list), False)
 
     def ask_spectrum_modulation_tolerance_rel(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Modulation)
@@ -472,7 +484,7 @@ class cmd57(scpi_device):
             Requires values at 10 frequency offsets (in kHz): [100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
             Supported values: -100.0 to 5.0 dB
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:RELative %s" % ",".join(db_list), False)
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:RELative %s" % self._format_float_list(db_list), False)
 
     def ask_spectrum_switching_tolerance_abs(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Switching)
@@ -486,7 +498,7 @@ class cmd57(scpi_device):
             Requires values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
             Supported values: -100.0 to 5.0 dBm
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:ABSolute %s" % ",".join(dbm_list), False)
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:ABSolute %s" % self._format_float_list(dbm_list), False)
 
     def ask_spectrum_switching_tolerance_rel(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Switching)
@@ -500,7 +512,7 @@ class cmd57(scpi_device):
             Requires values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
             Supported values: -100.0 to 5.0 dB
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:RELative %s" % ",".join(db_list), False)
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:RELative %s" % self._format_float_list(db_list), False)
 
     def ask_spectrum_modulation_match(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Query for observance of tolerances of the Spectrum (Modulation)
@@ -589,6 +601,21 @@ class cmd57(scpi_device):
         if tch_mode is not None: self.set_bts_tch_mode(tch_mode)
         if tch_timing is not None: self.set_bts_tch_timing(tch_timing)
         if tch_input_bandwidth is not None: self.set_bts_tch_input_bandwidth(tch_input_bandwidth)
+
+    def configure_spectrum_modulation_mask_rel(self, bts_power):
+        # According to the Table 6.5-1
+        if bts_power <= 33:
+            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -60.0, -60.0, -60.0, -63.0, -63.0, -63.0])
+        elif bts_power <= 35:
+            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -62.0, -62.0, -62.0, -65.0, -65.0, -65.0])
+        elif bts_power <= 37:
+            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -64.0, -64.0, -64.0, -67.0, -67.0, -67.0])
+        elif bts_power <= 39:
+            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -66.0, -66.0, -66.0, -69.0, -69.0, -69.0])
+        elif bts_power <= 41:
+            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -68.0, -68.0, -68.0, -68.0, -71.0, -71.0])
+        elif bts_power > 41: # >= 43 in the standard
+            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -70.0, -70.0, -70.0, -70.0, -73.0, -73.0])
 
     #
     # Switching between test modes
