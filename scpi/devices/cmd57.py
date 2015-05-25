@@ -436,6 +436,72 @@ class cmd57(scpi_device):
     # 7.5.1 Spectrum Measurements / Tolerance values
     #
 
+    def reset_spectrum_modulation_tolerance(self):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Reset tolerance values to default (Modulation)
+            Valid in: ALL  """
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:CLEar", False)
+
+    def reset_spectrum_switching_tolerance(self):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Reset tolerance values to default (Switching)
+            Valid in: ALL  """
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:CLEar", False)
+
+    def ask_spectrum_modulation_tolerance_abs(self):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Modulation)
+            Supported values: -100.0 to 5.0 dBm
+            Default value: -57.0 dBm
+            Valid in: ALL  """
+        return self.scpi.ask_float("CALCulate:LIMit:SPECtrum:MODulation:ABSolute?")
+
+    def set_spectrum_modulation_tolerance_abs(self, dbm):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Modulation)
+            Supported values: -100.0 to 5.0 dBm
+            Default value: -57.0 dBm
+            Valid in: ALL  """
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:ABSolute %f" % dbm, False)
+
+    def ask_spectrum_modulation_tolerance_rel(self):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Modulation)
+            Returns values for 10 frequency offsets (in kHz): [100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
+            Supported values: -100.0 to 5.0 dBm
+            Valid in: ALL  """
+        return self.scpi.ask_float_list("CALCulate:LIMit:SPECtrum:MODulation:RELative?")
+
+    def set_spectrum_modulation_tolerance_rel(self, db_list):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Modulation)
+            Requires values at 10 frequency offsets (in kHz): [100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
+            Supported values: -100.0 to 5.0 dB
+            Valid in: ALL  """
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:RELative %s" % ",".join(db_list), False)
+
+    def ask_spectrum_switching_tolerance_abs(self):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Switching)
+            Returns values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
+            Supported values: -100.0 to 5.0 dBm
+            Valid in: ALL  """
+        return self.scpi.ask_float_list("CALCulate:LIMit:SPECtrum:SWITching:ABSolute?", False)
+
+    def set_spectrum_switching_tolerance_abs(self, dbm_list):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Switching)
+            Requires values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
+            Supported values: -100.0 to 5.0 dBm
+            Valid in: ALL  """
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:ABSolute %s" % ",".join(dbm_list), False)
+
+    def ask_spectrum_switching_tolerance_rel(self):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Switching)
+            Returns values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
+            Supported values: -100.0 to 5.0 dB
+            Valid in: ALL  """
+        return self.scpi.ask_float_list("CALCulate:LIMit:SPECtrum:SWITching:RELative?", False)
+
+    def set_spectrum_switching_tolerance_rel(self, db_list):
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Switching)
+            Requires values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
+            Supported values: -100.0 to 5.0 dB
+            Valid in: ALL  """
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:RELative %s" % ",".join(db_list), False)
+
     def ask_spectrum_modulation_match(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Query for observance of tolerances of the Spectrum (Modulation)
             Note: Supplies result for the last measurement
@@ -448,6 +514,7 @@ class cmd57(scpi_device):
             Note: Supplies result for the last measurement
             Valid in: BTCH, MOD
             Return: (MATC | NMAT | INV) """
+        # TODO: For some reason always returns INV.
         return self.scpi.ask_str("CALCulate:LIMit:SPECtrum:SWITching:MATChing?")
 
     #
@@ -500,6 +567,10 @@ class cmd57(scpi_device):
     ###   High level functions
     ######################################
 
+    #
+    # Test modes configuration
+    #
+
     def configure_mod(self, expected_power=None, arfcn=None, tsc=None, decode=None, input_bandwidth=None, trigger_mode=None):
         if expected_power is not None: self.set_ban_expected_power(expected_power)
         if arfcn is not None: self.set_ban_arfcn(arfcn)
@@ -519,6 +590,9 @@ class cmd57(scpi_device):
         if tch_timing is not None: self.set_bts_tch_timing(tch_timing)
         if tch_input_bandwidth is not None: self.set_bts_tch_input_bandwidth(tch_input_bandwidth)
 
+    #
+    # Switching between test modes
+    #
 
     def _switch_to_x(self, mode):
         if self.ask_test_mode() != mode:
