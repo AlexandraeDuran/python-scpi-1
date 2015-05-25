@@ -605,17 +605,17 @@ class cmd57(scpi_device):
     def configure_spectrum_modulation_mask_rel(self, bts_power):
         # According to the Table 6.5-1
         if bts_power <= 33:
-            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -60.0, -60.0, -60.0, -63.0, -63.0, -63.0])
+            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -60.0, -60.0, -60.0, -63.0, -63.0, -63.0])
         elif bts_power <= 35:
-            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -62.0, -62.0, -62.0, -65.0, -65.0, -65.0])
+            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -62.0, -62.0, -62.0, -65.0, -65.0, -65.0])
         elif bts_power <= 37:
-            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -64.0, -64.0, -64.0, -67.0, -67.0, -67.0])
+            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -64.0, -64.0, -64.0, -67.0, -67.0, -67.0])
         elif bts_power <= 39:
-            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -66.0, -66.0, -66.0, -69.0, -69.0, -69.0])
+            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -66.0, -66.0, -66.0, -69.0, -69.0, -69.0])
         elif bts_power <= 41:
-            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -68.0, -68.0, -68.0, -68.0, -71.0, -71.0])
+            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -68.0, -68.0, -68.0, -68.0, -71.0, -71.0])
         elif bts_power > 41: # >= 43 in the standard
-            dev.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -70.0, -70.0, -70.0, -70.0, -73.0, -73.0])
+            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -70.0, -70.0, -70.0, -70.0, -73.0, -73.0])
 
     #
     # Switching between test modes
