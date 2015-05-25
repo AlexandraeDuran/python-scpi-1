@@ -97,7 +97,7 @@ if __name__ == '__main__':
     dev = cmd57.rs232(sys.argv[1], rtscts=True)
     atexit.register(dev.quit)
 
-    dev.confiure_man(ccch_arfcn=100, tch_arfcn=100, tch_ts=0, tsc=7, expected_power=37, tch_tx_power=-50, tch_mode='LOOP', tch_timing=0)
+    dev.configure_man(ccch_arfcn=100, tch_arfcn=100, tch_ts=0, tsc=7, expected_power=37, tch_tx_power=-50, tch_mode='LOOP', tch_timing=0)
     dev.configure_mod(expected_power=37, arfcn=100, tsc=7, decode='STANdard', input_bandwidth='NARRow', trigger_mode='POWer')
 
     print_sys_info(dev)
