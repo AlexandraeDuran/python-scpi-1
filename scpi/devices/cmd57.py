@@ -15,11 +15,11 @@ class cmd57(scpi_device):
     ###   Helper functions
     ######################################
 
-    def _format_float_list(val_list):
+    def _format_float_list(self, val_list):
         return ",".join(["%.2f"%x for x in val_list])
-    def _format_int_list(val_list):
+    def _format_int_list(self, val_list):
         return ",".join(["%d"%x for x in val_list])
-    def _format_str_list(val_list):
+    def _format_str_list(self, val_list):
         return ",".join(val_list)
 
     ######################################
