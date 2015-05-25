@@ -99,6 +99,7 @@ if __name__ == '__main__':
 
     dev.configure_man(ccch_arfcn=100, tch_arfcn=100, tch_ts=0, tsc=7, expected_power=37, tch_tx_power=-50, tch_mode='LOOP', tch_timing=0)
     dev.configure_mod(expected_power=37, arfcn=100, tsc=7, decode='STANdard', input_bandwidth='NARRow', trigger_mode='POWer')
+    dev.configure_spectrum_modulation_mask_rel(43) # most strict spectrum mask
 
     print_sys_info(dev)
     print_sys_config(dev)
