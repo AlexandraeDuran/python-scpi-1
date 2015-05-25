@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
     print_sys_info(dev)
     print_sys_config(dev)
-    print_bts_config(dev)
+    print_man_config(dev)
     print_mod_config(dev)
     print_cur_mode(dev)
 
