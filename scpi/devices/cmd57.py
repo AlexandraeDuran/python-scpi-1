@@ -591,7 +591,7 @@ class cmd57(scpi_device):
         if input_bandwidth is not None: self.set_ban_input_bandwidth(input_bandwidth)
         if trigger_mode is not None: self.set_ban_trigger_mode(trigger_mode)
 
-    def confiure_man(self, ccch_arfcn=None, tch_arfcn=None, tch_ts=None, tsc=None, expected_power=None, tch_tx_power=None, tch_mode=None, tch_timing=None, tch_input_bandwidth=None):
+    def configure_man(self, ccch_arfcn=None, tch_arfcn=None, tch_ts=None, tsc=None, expected_power=None, tch_tx_power=None, tch_mode=None, tch_timing=None, tch_input_bandwidth=None):
         if ccch_arfcn is not None: self.set_bts_ccch_arfcn(ccch_arfcn)
         if tch_arfcn is not None: self.set_bts_tch_arfcn(tch_arfcn)
         if tch_ts is not None: self.set_bts_tch_ts(tch_ts)
