@@ -533,29 +533,37 @@ class cmd57(scpi_device):
     # 7.5.3 Spectrum Measurements / Measurements
     #
 
+    def fetch_spectrum_modulation_offsets(self):
+        """ Return a list of frequency offsets (in kHz) for spectrum due to modulattion measurements """
+        return [-1800, -1600, -1400, -1200, -1000, -800, -600, -400, -250, -200, -100, 0, 100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]
+
     def ask_spectrum_modulation(self):
         """ 7.5.3 Executing Spectrum Measurement (Modulation)
-            Returns 23 frequency offsets (in kHz): [-1600, -1400, -1200, -1000, -800, -600, -400, -250, -200, -100, 0, 100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
+            Returns 23 frequency offsets (see fetch_spectrum_modulation_offsets() for a list)
             Valid in: BTCH, MOD  """
         # TODO: LONG operation
         return self.scpi.ask_float_list("READ:ARRay:SPECtrum:MODulation?")
 
     def fetch_spectrum_modulation(self):
         """ 7.5.3 Executing Spectrum Measurement (Modulation)
-            Returns 23 frequency offsets (in kHz): [-1600, -1400, -1200, -1000, -800, -600, -400, -250, -200, -100, 0, 100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
+            Returns 23 frequency offsets (see fetch_spectrum_modulation_offsets() for a list)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float_list("FETCh:ARRay:SPECtrum:MODulation?")
 
+    def fetch_spectrum_switching_offsets(self):
+        """ Return a list of frequency offsets (in kHz) for spectrum due to modulattion measurements """
+        return [-1800, -1200, -600, -400, 0, 400, 600, 1200, 1800]
+
     def ask_spectrum_switching(self):
         """ 7.5.3 Executing Spectrum Measurement (Switching)
-            Returns 9 frequency offsets (in kHz): [-1800, -1200, -600, -400, 0, 400, 600, 1200, 1800]
+            Returns 9 frequency offsets (see fetch_spectrum_switching_offsets() for a list)
             Valid in: BTCH, MOD  """
         # TODO: LONG operation
         return self.scpi.ask_float_list("READ:ARRay:SPECtrum:BTS:SWITching?")
 
     def fetch_spectrum_switching(self):
         """ 7.5.3 Executing Spectrum Measurement (Switching)
-            Returns 9 frequency offsets (in kHz): [-1800, -1200, -600, -400, 0, 400, 600, 1200, 1800]
+            Returns 9 frequency offsets (see fetch_spectrum_switching_offsets() for a list)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float_list("FETCh:ARRay:SPECtrum:BTS:SWITching?")
 
