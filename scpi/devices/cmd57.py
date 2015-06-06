@@ -630,9 +630,17 @@ class cmd57(scpi_device):
     #
 
     def _switch_to_x(self, mode):
-        if self.ask_test_mode() != mode:
-            self.set_test_mode("NONE")
+        cur_mode = self.ask_test_mode()
+        if cur_mode != mode:
+            if cur_mode != "NONE":
+                self.set_test_mode("NONE")
             self.set_test_mode(mode)
+
+    def switch_to_none(self):
+        self._switch_to_x("NONE")
+
+    def switch_to_idle(self):
+        self.switch_to_none()
 
     def switch_to_mod(self):
         self._switch_to_x("MOD")
@@ -643,6 +651,11 @@ class cmd57(scpi_device):
     def switch_to_man(self):
         self._switch_to_x("MAN")
 
+    def switch_to_man_bidl(self):
+        self.switch_to_man()
+        if self.ask_dev_state() != "BIDL":
+            self.set_sync_state("BIDL")
+
     def switch_to_man_bbch(self):
         self.switch_to_man()
         if self.ask_dev_state() != "BBCH":
@@ -650,8 +663,9 @@ class cmd57(scpi_device):
 
     def switch_to_man_btch(self):
         self.switch_to_man()
-        if self.ask_dev_state() != "BTCH":
-            if self.ask_dev_state() != "BBCH":
+        dev_state = self.ask_dev_state()
+        if dev_state != "BTCH":
+            if dev_state != "BBCH":
                 self.bcch_sync()
             self.set_sync_state("BTCH")
 
