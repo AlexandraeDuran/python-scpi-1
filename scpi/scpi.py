@@ -86,6 +86,12 @@ class scpi(object):
     def _parse_int(self, val):
         return None if val=="NAN" else int(val)
 
+    def _parse_int_onoff(self, val):
+        return None if val=="OFF" else int(val)
+
+    def _parse_float_onoff(self, val):
+        return None if val=="OFF" else float(val)
+
     def pop_str(self):
         """Pops the last value from message stack and parses it as a string"""
         data = self.message_stack.pop()
@@ -101,10 +107,20 @@ class scpi(object):
         data = self.message_stack.pop()
         return self._parse_int(data)
 
+    def pop_int_onoff(self):
+        """Pops the last value from message stack and parses it as an int or an on/off value"""
+        data = self.message_stack.pop()
+        return self._parse_int_onoff(data)
+
     def pop_float(self):
         """Pops the last value from message stack and parses it as a float"""
         data = self.message_stack.pop()
         return float(data)
+
+    def pop_float_onoff(self):
+        """Pops the last value from message stack and parses it as a float or an on/off value"""
+        data = self.message_stack.pop()
+        return self._parse_float_onoff(data)
 
     def pop_bool(self):
         """Pops the last value from message stack and parses it as a boolean"""
@@ -172,12 +188,26 @@ class scpi(object):
         self._ask_no_pop(command, force_wait)
         return self.pop_int()
 
+    def ask_int_onoff(self, command, force_wait=None):
+        """Sends the command (checking for errors), then pops and parses the last line as int or an on/off value
+        The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
+        the request we can use this to avoid nasty race conditions"""
+        self._ask_no_pop(command, force_wait)
+        return self.pop_int_onoff()
+
     def ask_float(self, command, force_wait=None):
         """Sends the command (checking for errors), then pops and parses the last line as float
         The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
         the request we can use this to avoid nasty race conditions"""
         self._ask_no_pop(command, force_wait)
         return self.pop_float()
+
+    def ask_float_onoff(self, command, force_wait=None):
+        """Sends the command (checking for errors), then pops and parses the last line as float
+        The force_wait parameter is in seconds (or none to use instance default), if we know the device is going to take a while processing
+        the request we can use this to avoid nasty race conditions"""
+        self._ask_no_pop(command, force_wait)
+        return self.pop_float_onoff()
 
     def ask_bool(self, command, force_wait=None):
         """Sends the command (checking for errors), then pops and parses the last line as float
