@@ -61,7 +61,7 @@ class scpi(object):
         finally:
             self.transport_lock.release()
 
-    def send_command(self, command, expect_response=True, force_wait=None):
+    def send_command(self, command, expect_response=False, force_wait=None):
         """Sends the command and makes sure it did not trigger errors, in case of timeout checks if there was another underlying error and raises that instead
         The force_wait parameter is in seconds, if we know the device is going to take a while processing the request we can use this to avoid nasty race conditions"""
         re_raise = None
