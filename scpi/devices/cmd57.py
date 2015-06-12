@@ -311,6 +311,307 @@ class cmd57(scpi_device):
         return self.scpi.send_command("PROCedure:BTSState %s"%str(state), False)
 
     #
+    # 7.2 BER
+    #
+
+    #
+    # 7.2.1 Selection of the BER Measurement Configuration (Parameter Set)
+    #
+
+    def set_ber_test_num(self, test_num):
+        """ 7.2.1 Selection of the BER Measurement Configuration (Parameter Set)
+            Supported values: 1-7
+            Valid in: ALL  """
+        return self.scpi.send_command("CONF:BER:SEL BER%d" % test_num)
+
+    def ask_ber_test_num(self):
+        """ 7.2.1 Selection of the BER Measurement Configuration (Parameter Set)
+            Supported values: 1-7
+            Valid in: ALL  """
+        res = self.scpi.ask_str("CONF:BER:SEL?")
+        if len(res) == 4 and res[0:3] == "BER":
+            return int(res[3:4])
+        else:
+            return None
+
+    #
+    # 7.2.2 Measurement Tolerances for the BER Configuration Selected
+    #
+
+    def set_ber_limit_class_1b(self, limit):
+        """ 7.2.2 Maximal Values for Class-Ib Events
+            Supported values: 0-100,000
+            Valid in: ALL  """
+        return self.scpi.send_command("CALCulate:LIMit:BER:CLIB:MEVents %d" % limit)
+
+    def ask_ber_limit_class_1b(self):
+        """ 7.2.2 Maximal Values for Class-Ib Events
+            Supported values: 0-100,000
+            Valid in: ALL  """
+        return self.scpi.ask_int("CALCulate:LIMit:BER:CLIB:MEVents?")
+
+    def set_ber_limit_class_2(self, limit):
+        """ 7.2.2 Maximal Values for Class-II Events
+            Supported values: 0-100,000
+            Valid in: ALL  """
+        return self.scpi.send_command("CALCulate:LIMit:BER:CLII:MEVents %d" % limit)
+
+    def ask_ber_limit_class_2(self):
+        """ 7.2.2 Maximal Values for Class-II Events
+            Supported values: 0-100,000
+            Valid in: ALL  """
+        return self.scpi.ask_int("CALCulate:LIMit:BER:CLII:MEVents?")
+
+    def set_ber_limit_erased_frames(self, limit):
+        """ 7.2.2 Maximal Values for Erased Frames
+            Supported values: 0-50,000
+            Valid in: ALL  """
+        return self.scpi.send_command("CALCulate:LIMit:BER:EFRames:MEVents %d" % limit)
+
+    def ask_ber_limit_erased_frames(self):
+        """ 7.2.2 Maximal Values for Erased Frames
+            Supported values: 0-50,000
+            Valid in: ALL  """
+        return self.scpi.ask_int("CALCulate:LIMit:BER:EFRames:MEVents?")
+
+    #
+    # 7.2.3 Measurement Parameters for the BER Configuration Selected
+    #
+
+    def set_ber_used_ts_power(self, power):
+        """ 7.2.3 Level for TCH in the Used Timeslot
+            Supported values: 
+            Valid in: ALL except BEXT  """
+        return self.scpi.send_command("CONF:BER:POWer:USED %.1f" % power)
+
+    def ask_ber_used_ts_power(self):
+        """ 7.2.3 Level for TCH in the Used Timeslot
+            Supported values: 
+            Valid in: ALL except BEXT  """
+        return self.scpi.ask_float("CONF:BER:POWer:USED?")
+
+    def set_ber_unused_ts_power(self, power):
+        """ 7.2.3 Level for TCH in the Unused Timeslot relative to the Used Timeslot
+            Supported values:
+                -20.0 to +30.0 dB
+                None (OFF) - turn off unused timeslots
+            Valid in: ALL except BEXT  """
+        val = "OFF" if power is None else "%d"%power
+        return self.scpi.send_command("CONF:BER:POWer:UNUSed %.1f" % val)
+
+    def ask_ber_unused_ts_power(self):
+        """ 7.2.3 Level for TCH in the Unused Timeslot relative to the Used Timeslot
+            Supported values:
+                -20.0 to +30.0 dB
+                None (OFF) - turn off unused timeslots
+            Valid in: ALL except BEXT  """
+        return self.scpi.ask_float_onoff("CONF:BER:POWer:UNUSed?")
+
+    def set_ber_frames_num(self, frames):
+        """ 7.2.3 Number of Frames to send
+            Supported values: 1 - 50,000
+            Valid in: ALL  """
+        return self.scpi.send_command("CONF:BER:FRAMestosend %d" % frames)
+
+    def ask_ber_frames_num(self):
+        """ 7.2.3 Number of Frames to send
+            Supported values: 1 - 50,000
+            Valid in: ALL  """
+        return self.scpi.ask_int("CONF:BER:FRAMestosend?")
+
+    def ask_ber_max_class_1b_samples(self):
+        """ 7.2.3 Maximal Number of Samples to be sent for Class-Ib bits (read only)
+            The value is derived from the "Frames to Send" and is read only.
+            Supported values: 78 - 780,000
+            Valid in: ALL  """
+        return self.scpi.ask_int("CONF:BER:CLIB:MSAMples?")
+
+    def ask_ber_max_class_2_samples(self):
+        """ 7.2.3 Maximal Number of Samples to be sent for Class-II bits (read only)
+            The value is derived from the "Frames to Send" and is read only.
+            Supported values: 132 - 6,600,000
+            Valid in: ALL  """
+        return self.scpi.ask_int("CONF:BER:CLII:MSAMples?")
+
+    def ask_ber_max_erased_frames_samples(self):
+        """ 7.2.3 Maximal Number of Samples to be sent for Erased Frames (read only)
+            The value is derived from the "Frames to Send" and is read only.
+            Supported values: 1 - 50,000
+            Valid in: ALL  """
+        return self.scpi.ask_int("CONF:BER:EFRames:MSAMples?")
+
+    def ask_ber_max_test_time(self):
+        """ 7.2.3 Maximal Test Time (read only)
+            The value is derived from the "Frames to Send" and is read only.
+            Supported values: 0.02 - 1,000 s
+            Valid in: ALL  """
+        return self.scpi.ask_float("CONF:BER:TEST:TIME?")
+
+    def set_ber_abort_cond(self, cond):
+        """ 7.2.3 Abort Condition for BER Measurement
+            Supported values:
+                ALIMits  - Abort when all limits have been reached
+                ASAMples - Abort when all smaples have been transmitted
+                FLIMit   - Abort on first exceeding of a limit
+            Valid in: ALL  """
+        return self.scpi.send_command("CONF:BER:SCONdition %s" % cond)
+
+    def ask_ber_abort_cond(self):
+        """ 7.2.3 Abort Condition for BER Measurement
+            Supported values:
+                ALIMits  - Abort when all limits have been reached
+                ASAMples - Abort when all smaples have been transmitted
+                FLIMit   - Abort on first exceeding of a limit
+            Valid in: ALL  """
+        return self.scpi.ask_str("CONF:BER:SCONdition?")
+
+    def set_ber_holdoff_time(self, time):
+        """ 7.2.3 Hold-off time for BER Measurement
+            Supported values: 0.1 to 100.0 s
+            Valid in: ALL  """
+        return self.scpi.send_command("CONF:BER:HOLDoff:TIME %.1f" % time)
+
+    def ask_ber_holdoff_time(self):
+        """ 7.2.3 Hold-off time for BER Measurement
+            Supported values: 0.1 to 100.0 s
+            Valid in: ALL  """
+        return self.scpi.ask_float("CONF:BER:HOLDoff:TIME?")
+
+    #
+    # 7.2.4 BER Measurement
+    #
+
+    def read_ber_class_1b_ber(self):
+        """ 7.2.4 Execute new measurement and Read measured value of Class-Ib BER
+            Supported values: 0 to 100 %
+            Valid in: BTCH  """
+        return self.scpi.ask_float("READ:BER:CLIB:BER?")
+
+    def read_ber_class_1b_events(self):
+        """ 7.2.4 Execute new measurement and Read measured value of Class-Ib events
+            Supported values: 0 to 100,000
+            Valid in: BTCH  """
+        return self.scpi.ask_int("READ:BER:CLIB:EVENts?")
+
+    def read_ber_class_1b_rber(self):
+        """ 7.2.4 Execute new measurement and Read measured value of Class-Ib RBER
+            Supported values: 0 to 100 %
+            Valid in: BTCH  """
+        return self.scpi.ask_float("READ:BER:CLIB:RBER?")
+
+    def fetch_ber_class_1b_ber(self):
+        """ 7.2.4 Fetch measured value of Class-Ib BER
+            Supported values: 0 to 100 %
+            Valid in: BTCH  """
+        return self.scpi.ask_float("FETCh:BER:CLIB:BER?")
+
+    def fetch_ber_class_1b_events(self):
+        """ 7.2.4 Fetch measured value of Class-Ib events
+            Supported values: 0 to 100,000
+            Valid in: BTCH  """
+        return self.scpi.ask_int("FETCh:BER:CLIB:EVENts?")
+
+    def fetch_ber_class_1b_rber(self):
+        """ 7.2.4 Fetch measured value of Class-Ib RBER
+            Supported values: 0 to 100 %
+            Valid in: BTCH  """
+        return self.scpi.ask_float("FETCh:BER:CLIB:RBER?")
+
+    def read_ber_class_2_ber(self):
+        """ 7.2.4 Execute new measurement and Read measured value of Class-II BER
+            Supported values: 0 to 100 %
+            Valid in: BTCH  """
+        return self.scpi.ask_float("READ:BER:CLII:BER?")
+
+    def read_ber_class_2_events(self):
+        """ 7.2.4 Execute new measurement and Read measured value of Class-II events
+            Supported values: 0 to 100,000
+            Valid in: BTCH  """
+        return self.scpi.ask_int("READ:BER:CLII:EVENts?")
+
+    def read_ber_class_2_rber(self):
+        """ 7.2.4 Execute new measurement and Read measured value of Class-II RBER
+            Supported values: 0 to 100 %
+            Valid in: BTCH  """
+        return self.scpi.ask_float("READ:BER:CLII:RBER?")
+
+    def fetch_ber_class_2_ber(self):
+        """ 7.2.4 Fetch measured value of Class-II BER
+            Supported values: 0 to 100 %
+            Valid in: BTCH  """
+        return self.scpi.ask_float("FETCh:BER:CLII:BER?")
+
+    def fetch_ber_class_2_events(self):
+        """ 7.2.4 Fetch measured value of Class-II events
+            Supported values: 0 to 100,000
+            Valid in: BTCH  """
+        return self.scpi.ask_int("FETCh:BER:CLII:EVENts?")
+
+    def fetch_ber_class_2_rber(self):
+        """ 7.2.4 Fetch measured value of Class-II RBER
+            Supported values: 0 to 100 %
+            Valid in: BTCH  """
+        return self.scpi.ask_float("FETCh:BER:CLII:RBER?")
+
+    def read_ber_erased_fer(self):
+        """ 7.2.4 Execute new measurement and Read measured value of Erased Frames FER
+            Supported values: 0 to 100 %
+            Valid in: BTCH  """
+        return self.scpi.ask_float("READ:BER:EFRames:FER?")
+
+    def read_ber_erased_events(self):
+        """ 7.2.4 Execute new measurement and Read measured value of Erased Frames events
+            Supported values: 0 to 50,000
+            Valid in: BTCH  """
+        return self.scpi.ask_int("READ:BER:EFRames:EVENts?")
+
+    def fetch_ber_erased_fer(self):
+        """ 7.2.4 Fetch measured value of Erased Frames FER
+            Supported values: 0 to 100 %
+            Valid in: BTCH  """
+        return self.scpi.ask_float("FETCh:BER:EFRames:FER?")
+
+    def fetch_ber_erased_events(self):
+        """ 7.2.4 Fetch measured value of Erased Frames events
+            Supported values: 0 to 50,000
+            Valid in: BTCH  """
+        return self.scpi.ask_int("FETCh:BER:EFRames:EVENts?")
+
+    def read_ber_crc_errors(self):
+        """ 7.2.4 Execute new measurement and Read measured value of CRC Errors
+            Supported values: 0 to (number of frames sent)/4
+            Valid in: MCE  """
+        return self.scpi.ask_int("READ:BER:CRC:ERRor?")
+
+    def fetch_ber_crc_errors(self):
+        """ 7.2.4 Fetch measured value of CRC Errors
+            Supported values: 0 to (number of frames sent)/4
+            Valid in: MCE  """
+        return self.scpi.ask_int("FETCh:BER:CRC:ERRor?")
+
+    def read_ber_test_result(self):
+        """ 7.2.4 Execute new measurement and Read measured Total Result of a BER Measurement
+            Supported values:
+                PASS   - Results valid, all configured frames sent, all tolerances observed
+                FAIL   - Results valid, but not all configured frames sent and/or tolerances observed
+                INV    - Measurement results are invalid
+                TLOW   - BS signal level is too low, results are not valid
+                IMP    - No measurement possible, results are not valid
+            Valid in: BTCH  """
+        return self.scpi.ask_str("READ:BER:TRESult?")
+
+    def fetch_ber_test_result(self):
+        """ 7.2.4 Fetch measured Total Result of a BER Measurement
+            Supported values:
+                PASS   - Results valid, all configured frames sent, all tolerances observed
+                FAIL   - Results valid, but not all configured frames sent and/or tolerances observed
+                INV    - Measurement results are invalid
+                TLOW   - BS signal level is too low, results are not valid
+                IMP    - No measurement possible, results are not valid
+            Valid in: BTCH  """
+        return self.scpi.ask_str("FETCh:BER:TRESult?")
+
+    #
     # 7.3.2 Power Tolerance Measurement
     #
 
