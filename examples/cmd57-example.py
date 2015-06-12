@@ -66,7 +66,9 @@ def print_mod_config(dev):
     else:
         print "  Ext atten RF In2:   %f" % dev.ask_ext_att_rf_in2()
 
-def print_mod_info(dev):
+def print_mod_info(dev, update=False):
+    if update:
+        dev.ask_burst_power_avg()
     (pk_phase_err_match, avg_phase_err_match, freq_err_match) = dev.ask_phase_freq_match()
     print "Module test - Burst Analysis measurements"
     print "  Peak power:         %s dBm" % format_float(dev.ask_peak_power())
@@ -79,9 +81,39 @@ def print_mod_info(dev):
     print "  Spectrum modulation: %s" % dev.ask_spectrum_modulation_match()
     print "  Spectrum switching:  %s" % dev.ask_spectrum_switching_match()
 
-def update_mod_info(dev):
-    dev.ask_burst_power_avg()
-    print_mod_info(dev)
+def print_ber_test_settings(dev):
+    power_ts_unused = dev.ask_ber_unused_ts_power()
+    print "BER Test %d settings:" % dev.ask_ber_test_num()
+    print "  Used TS power:      %.1f dBm" % dev.ask_ber_used_ts_power()
+    print "  Unused TS power:    %s dB" % ("OFF" if power_ts_unused is None else ("%.1f"%power_ts_unused),)
+    print "  Frames to send:     %d" % dev.ask_ber_frames_num()
+    print "  Test time:          %.1f s" % dev.ask_ber_max_test_time()
+    print "  Abort condition:    %s" % dev.ask_ber_abort_cond()
+    print "  Hold-off time:      %.1f s" % dev.ask_ber_holdoff_time()
+    print "                Tolerance      Total"
+    print "  Class Ib         %6d     %6d"    % (dev.ask_ber_limit_class_1b(), dev.ask_ber_max_class_1b_samples())
+    print "  Class II         %6d     %6d"    % (dev.ask_ber_limit_class_2(), dev.ask_ber_max_class_2_samples())
+    print "  Erased Frames    %6d     %6d"    % (dev.ask_ber_limit_erased_frames(), dev.ask_ber_max_erased_frames_samples())
+
+def print_ber_test_result(dev, update=False):
+    if update:
+        res = dev.read_ber_test_result()
+    else:
+        res = dev.fetch_ber_test_result()
+    print "BER Test result:"
+    print "  Test result:           %s"    % res
+    if res in ["PASS", "FAIL"]:
+        (ber1b_events, ber1b_ber, ber1b_rber) = (dev.fetch_ber_class_1b_events(), dev.fetch_ber_class_1b_ber(), dev.fetch_ber_class_1b_rber())
+        (ber2_events, ber2_ber, ber2_rber) = (dev.fetch_ber_class_2_events(), dev.fetch_ber_class_2_ber(), dev.fetch_ber_class_2_rber())
+        (fer_events, fer_percent) = (dev.fetch_ber_erased_events(), dev.fetch_ber_erased_fer())
+        crc_errors = dev.fetch_ber_crc_errors()
+        print "                events    BER       RBER"
+        print "  Class Ib      %6d  %7.3f%%  %7.3f%%"    % (ber1b_events, ber1b_ber, ber1b_rber)
+        print "  Class II      %6d  %7.3f%%  %7.3f%%"    % (ber2_events, ber2_ber, ber2_rber)
+        print "                events    FER"
+        print "  Erased Frames %6d  %7.3f%%"             % (fer_events, fer_percent)
+        print "  CRC errors:   %6d"                   % crc_errors
+
 
 def print_cur_mode(dev):
     print "Current test mode:    %s" % dev.ask_test_mode()
