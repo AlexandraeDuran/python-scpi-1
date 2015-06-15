@@ -833,6 +833,46 @@ class cmd57(scpi_device):
         return self.scpi.ask_str("CALCulate:LIMit:SPECtrum:SWITching:MATChing?")
 
     #
+    # 7.5.2 Spectrum Measurements / Test Parameters
+    #
+
+    def ask_spectrum_modulation_burst_num(self):
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts to be Measured (Modulation)
+            Supported values: 1 to 2000
+            Valid in: IDLE  """
+        return self.scpi.ask_int("CONF:SPECtrum:MODulation:AVERage?", False)
+
+    def set_spectrum_modulation_burst_num(self, num):
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts to be Measured (Switching)
+            Supported values: 1 to 2000
+            Valid in: IDLE  """
+        return self.scpi.send_command("CONF:SPECtrum:MODulation:AVERage %d" % num, False)
+
+    def ask_spectrum_switching_burst_num(self):
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts to be Measured (Switching)
+            Supported values: 1 to 2000
+            Valid in: IDLE  """
+        return self.scpi.ask_int("CONF:SPECtrum:SWITching:AVERage?", False)
+
+    def set_spectrum_switching_burst_num(self, num):
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts to be Measured (Switching)
+            Supported values: 1 to 2000
+            Valid in: IDLE  """
+        return self.scpi.send_command("CONF:SPECtrum:SWITching:AVERage %d" % num, False)
+
+    def ask_spectrum_switching_noise_corr(self):
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Noise Correction (Switching)
+            Supported values: 1 to 2000
+            Valid in: ALL  """
+        return self.scpi.ask_bool("CONF:SPECtrum:SWITching:NOISe:CORRection?", False)
+
+    def set_spectrum_switching_noise_corr(self, corr):
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Noise Correction (Switching)
+            Supported values: True (ON) / False (OFF)
+            Valid in: ALL  """
+        return self.scpi.send_command("CONF:SPECtrum:SWITching:NOISe:CORRection %s" % _format_onoff(corr), False)
+
+    #
     # 7.5.3 Spectrum Measurements / Measurements
     #
 
@@ -913,6 +953,13 @@ class cmd57(scpi_device):
         if tch_mode is not None: self.set_bts_tch_mode(tch_mode)
         if tch_timing is not None: self.set_bts_tch_timing(tch_timing)
         if tch_input_bandwidth is not None: self.set_bts_tch_input_bandwidth(tch_input_bandwidth)
+
+    def configure_spectrum_modulation(self, burst_num=None):
+        if burst_num is not None: self.set_spectrum_modulation_burst_num(burst_num)
+
+    def configure_spectrum_switching(self, burst_num=None, noise_corr=None):
+        if burst_num is not None: self.set_spectrum_switching_burst_num(burst_num)
+        if noise_corr is not None: self.set_spectrum_switching_noise_corr(noise_corr)
 
     def configure_spectrum_modulation_mask_rel(self, bts_power):
         # According to the Table 6.5-1
