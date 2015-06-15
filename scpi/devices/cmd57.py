@@ -1038,15 +1038,8 @@ def rs232(port, **kwargs):
     # Now we should be safe to open at 9600 baud
     serial_port = pyserial.Serial(port, 9600, timeout=0, **kwargs)
     transport = serial_transport(serial_port)
-    dev = cmd57(transport)
     # Clear serial port
-    serial_port.write("\n\n\n")
-    # Clear error status
-    dev.scpi.send_command("*CLS", expect_response=False)
-    # This must be excessive, but check that we're actually at 9600 baud
-    ret = dev.scpi.ask_int(":SYSTem:COMMunicate:SERial:BAUD?")
-    if ret != 9600:
-       raise Exception("Can't switch to 9600 baud!")
+    serial_port.write("\n")
 
-    return dev
+    return transport
 
