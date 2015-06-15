@@ -2,6 +2,7 @@ MANIFEST
 .DS_Store
 ._*
 *.py[cod]
+*~
 
 # C extensions
 *.so
