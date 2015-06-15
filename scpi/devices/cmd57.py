@@ -2,6 +2,19 @@
 
 from scpi import scpi_device
 
+######################################
+###   Helper functions
+######################################
+
+def _format_float_list(val_list):
+    return ",".join(["%.2f"%x for x in val_list])
+def _format_int_list(val_list):
+    return ",".join(["%d"%x for x in val_list])
+def _format_str_list(val_list):
+    return ",".join(val_list)
+def _format_onoff(val):
+    return "ON" if val else "OFF"
+
 class cmd57(scpi_device):
     """Adds the ROHDE&SCHWARZ CMD57 specific SCPI commands as methods"""
 
@@ -10,17 +23,6 @@ class cmd57(scpi_device):
         super(cmd57, self).__init__(transport, *args, **kwargs)
         self.scpi.command_timeout = 60 # Seconds
         self.scpi.ask_default_wait = 0 # Seconds
-
-    ######################################
-    ###   Helper functions
-    ######################################
-
-    def _format_float_list(self, val_list):
-        return ",".join(["%.2f"%x for x in val_list])
-    def _format_int_list(self, val_list):
-        return ",".join(["%d"%x for x in val_list])
-    def _format_str_list(self, val_list):
-        return ",".join(val_list)
 
     ######################################
     ###   Low level functions
@@ -771,7 +773,7 @@ class cmd57(scpi_device):
             Supported values: -100.0 to 5.0 dBm
             Default value: -57.0 dBm
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:ABSolute %s" % self._format_float_list(dbm_list), False)
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:ABSolute %s" % _format_float_list(dbm_list), False)
 
     def ask_spectrum_modulation_tolerance_rel(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Modulation)
@@ -785,7 +787,7 @@ class cmd57(scpi_device):
             Requires values at 10 frequency offsets (in kHz): [100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
             Supported values: -100.0 to 5.0 dB
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:RELative %s" % self._format_float_list(db_list), False)
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:RELative %s" % _format_float_list(db_list), False)
 
     def ask_spectrum_switching_tolerance_abs(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Switching)
@@ -799,7 +801,7 @@ class cmd57(scpi_device):
             Requires values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
             Supported values: -100.0 to 5.0 dBm
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:ABSolute %s" % self._format_float_list(dbm_list), False)
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:ABSolute %s" % _format_float_list(dbm_list), False)
 
     def ask_spectrum_switching_tolerance_rel(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Switching)
@@ -813,7 +815,7 @@ class cmd57(scpi_device):
             Requires values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
             Supported values: -100.0 to 5.0 dB
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:RELative %s" % self._format_float_list(db_list), False)
+        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:RELative %s" % _format_float_list(db_list), False)
 
     def ask_spectrum_modulation_match(self):
         """ 7.5.1 Spectrum Measurements / Tolerance values / Query for observance of tolerances of the Spectrum (Modulation)
@@ -900,7 +902,8 @@ class cmd57(scpi_device):
         if input_bandwidth is not None: self.set_ban_input_bandwidth(input_bandwidth)
         if trigger_mode is not None: self.set_ban_trigger_mode(trigger_mode)
 
-    def configure_man(self, ccch_arfcn=None, tch_arfcn=None, tch_ts=None, tsc=None, expected_power=None, tch_tx_power=None, tch_mode=None, tch_timing=None, tch_input_bandwidth=None):
+    def configure_man(self, ccch_arfcn=None, tch_arfcn=None, tch_ts=None, tsc=None, expected_power=None, \
+                      tch_tx_power=None, tch_mode=None, tch_timing=None, tch_input_bandwidth=None):
         if ccch_arfcn is not None: self.set_bts_ccch_arfcn(ccch_arfcn)
         if tch_arfcn is not None: self.set_bts_tch_arfcn(tch_arfcn)
         if tch_ts is not None: self.set_bts_tch_ts(tch_ts)
