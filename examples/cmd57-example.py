@@ -1,4 +1,4 @@
-#!/usr/bin/env python -i
+#!/usr/bin/env python3 -i
 import os,sys
 # Add the parent dir to search paths
 #libs_dir = os.path.join(os.path.dirname( os.path.realpath( __file__ ) ),  '..')
@@ -11,8 +11,8 @@ import atexit
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print "Usage:"
-        print "  python -i cmd57-example.py /dev/ttyUSB0"
+        print ("Usage:")
+        print ("  python -i cmd57-example.py /dev/ttyUSB0")
         sys.exit(1)
     # Then put to interactive mode
     os.environ['PYTHONINSPECT'] = '1'
@@ -29,6 +29,6 @@ if __name__ == '__main__':
     dev.print_mod_config()
     dev.print_cur_mode()
 
-    print
-    print "Expecting your input now"
+    print ("")
+    print ("Expecting your input now")
 
