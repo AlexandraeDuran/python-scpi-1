@@ -61,6 +61,14 @@ class cmd57(scpi_device):
             return None
         return "I%dO%d" % (in_num, out_num)
 
+    def ask_network_type(self):
+        """ 1.1-1.3 Network type"""
+        return self.scpi.ask_str("CONFigure:NETWork:TYPE?")
+
+    def set_network_type(self, net):
+        """ 1.1-1.3 Network type"""
+        return self.scpi.send_command("CONFigure:NETWork:TYPE %s" % net, False)
+
     def ask_ext_att_rf_in1(self):
         """ 2.1 External Attenuation at RF In 1 """
         return self.scpi.ask_float("SENSe1:CORRection:LOSS?")
