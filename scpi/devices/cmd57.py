@@ -1029,9 +1029,9 @@ def rs232(port, **kwargs):
     # Try opening at 2400 baud (default setting) and switch to 9600 baud
     serial_port = pyserial.Serial(port, 2400, timeout=0, **kwargs)
     # Clear junk in the serial port buffer
-    serial_port.write("\n")
+    serial_port.write(b"\n")
     # Change the baud rate
-    serial_port.write(":SYSTem:COMMunicate:SERial:BAUD 9600"+"\n")
+    serial_port.write(b":SYSTem:COMMunicate:SERial:BAUD 9600\n")
     # Wait for the command to be written and close port
     serial_port.close()
 
@@ -1039,7 +1039,7 @@ def rs232(port, **kwargs):
     serial_port = pyserial.Serial(port, 9600, timeout=0, **kwargs)
     transport = serial_transport(serial_port)
     # Clear serial port
-    serial_port.write("\n")
+    serial_port.write(b"\n")
 
     return transport
 

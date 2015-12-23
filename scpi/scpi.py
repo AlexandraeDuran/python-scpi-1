@@ -2,7 +2,7 @@
 import time
 import re
 
-from exceptions import RuntimeError, ValueError
+#from exceptions import RuntimeError, ValueError
 from .errors import TimeoutError, CommandError
 import decimal
 
@@ -68,7 +68,7 @@ class scpi(object):
         try:
             # PONDER: auto-add ";*WAI" ??
             self.send_command_unchecked(command, expect_response, force_wait)
-        except (TimeoutError), e:
+        except TimeoutError as e:
             re_raise = e
         finally:
             self.check_error(command)
@@ -160,7 +160,7 @@ class scpi(object):
         re_raise = None
         try:
             self.send_command_unchecked(command, True, force_wait)
-        except (TimeoutError), e:
+        except TimeoutError as e:
             # This will raise the correct error in case we got a timeout waiting for the input
             self.check_error(command)
             # If there was not error, re-raise the timeout

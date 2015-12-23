@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """Serial port transport layer, uses RTS/CTS for flow-control"""
 import serial as pyserial
 import threading
@@ -6,7 +8,7 @@ import binascii
 import time
 import sys
 import select
-from baseclass import transports_base
+from .baseclass import transports_base
 
 # basically a wrapper for Serial
 class transports_rs232(transports_base):
@@ -48,7 +50,7 @@ class transports_rs232(transports_base):
                 for method in self._current_states:
                     self._current_states[method] = getattr(self.serial_port, method)()
                     if self._current_states[method] != self._previous_states[method]:
-                        print " *** %s changed to %d *** " % (method, self._current_states[method])
+                        print (" *** %s changed to %d *** " % (method, self._current_states[method]))
                         self._previous_states[method] = self._current_states[method]
                 rd, wd, ed  = select.select([ self.serial_port, ], [], [ self.serial_port, ], 5) # Wait up to 5s for new data
                 if not self.serial_port.inWaiting():
@@ -68,7 +70,7 @@ class transports_rs232(transports_base):
                     else:
                         sys.stdout.write(data)
                 # Put the data into inpit buffer and check for CRLF
-                self.input_buffer += data
+                self.input_buffer += data.decode('utf-8')
                 # Trim prefix NULLs and linebreaks
                 self.input_buffer = self.input_buffer.lstrip(chr(0x0) + self.line_terminator)
                 #print "input_buffer=%s" % repr(self.input_buffer)
@@ -81,8 +83,8 @@ class transports_rs232(transports_base):
 
 #        except (IOError, pyserial.SerialException), e:
 # something overwrites the module when running I get <type 'exceptions.AttributeError'>: 'NoneType' object has no attribute 'SerialException' if port fails...
-        except (IOError), e:
-            print "Got exception %s" % e
+        except IOError as e:
+            print ("Got exception %s" % e)
             self.serial_alive = False
             # It seems we cannot really call this from here, how to detect the problem in main thread ??
             #self.launcher_instance.unload_device(self.object_name)
@@ -114,4 +116,4 @@ class transports_rs232(transports_base):
                 # Yield while waiting for CTS
                 time.sleep(0)
         send_str = command + self.line_terminator
-        self.serial_port.write(send_str)
+        self.serial_port.write(send_str.encode('utf-8'))

@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 """Baseclass for all the transports, if common methods are needed they will be defined here
 
 All transports must define certain basic methods (check all the raise NotImplementedError)
 """
 
-from exceptions import NotImplementedError
-from exceptions import RuntimeError
+#from exceptions import NotImplementedError
+#from exceptions import RuntimeError
 
 
 class transports_base(object):
