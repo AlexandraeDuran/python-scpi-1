@@ -11,12 +11,14 @@ import select
 from .baseclass import transports_base
 
 # basically a wrapper for Serial
+
+
 class transports_rs232(transports_base):
     def __init__(self, port, *args, **kwargs):
         """Initializes a serial transport, requires open serial port and message callback as arguments"""
         super(transports_rs232, self).__init__(*args, **kwargs)
         self.line_terminator = "\r\n"
-        self._terminator_slice = -1*len(self.line_terminator)
+        self._terminator_slice = -1 * len(self.line_terminator)
         # For tracking state changes
         self._previous_states = {
             'getCTS': None,
@@ -48,13 +50,17 @@ class transports_rs232(transports_base):
         try:
             while self.serial_alive:
                 for method in self._current_states:
-                    self._current_states[method] = getattr(self.serial_port, method)()
+                    self._current_states[method] = getattr(
+                        self.serial_port, method)()
                     if self._current_states[method] != self._previous_states[method]:
-                        print (" *** %s changed to %d *** " % (method, self._current_states[method]))
+                        print(" *** %s changed to %d *** " %
+                              (method, self._current_states[method]))
                         self._previous_states[method] = self._current_states[method]
-                rd, wd, ed  = select.select([ self.serial_port, ], [], [ self.serial_port, ], 5) # Wait up to 5s for new data
+                rd, wd, ed = select.select([self.serial_port, ], [], [
+                                           self.serial_port, ], 5)  # Wait up to 5s for new data
                 if not self.serial_port.inWaiting():
-                    # Don't try to read if there is no data, instead sleep (yield) a bit
+                    # Don't try to read if there is no data, instead sleep
+                    # (yield) a bit
                     time.sleep(0)
                     continue
                 data = self.serial_port.read(1)
@@ -62,7 +68,7 @@ class transports_rs232(transports_base):
                     continue
                 if self.print_debug:
                     # hex-encode unprintable characters
-                    #if data not in string.letters.join(string.digits).join(string.punctuation).join("\r\n"):
+                    # if data not in string.letters.join(string.digits).join(string.punctuation).join("\r\n"):
                     #     sys.stdout.write("\\0x".join(binascii.hexlify(data)))
                     # OTOH repr was better afterall
                     if data not in self.line_terminator:
@@ -72,22 +78,26 @@ class transports_rs232(transports_base):
                 # Put the data into inpit buffer and check for CRLF
                 self.input_buffer += data.decode('utf-8')
                 # Trim prefix NULLs and linebreaks
-                self.input_buffer = self.input_buffer.lstrip(chr(0x0) + self.line_terminator)
-                #print "input_buffer=%s" % repr(self.input_buffer)
-                if (    len(self.input_buffer) > 0
-                    and self.input_buffer[self._terminator_slice:] == self.line_terminator):
+                self.input_buffer = self.input_buffer.lstrip(
+                    chr(0x0) + self.line_terminator)
+                # print "input_buffer=%s" % repr(self.input_buffer)
+                if (len(self.input_buffer) > 0 and
+                        self.input_buffer[self._terminator_slice:] == self.line_terminator):
                     # Got a message, parse it (sans the CRLF) and empty the buffer
-                    #print "DEBUG: calling self.message_received()"
-                    self.message_received(self.input_buffer[:self._terminator_slice])
+                    # print "DEBUG: calling self.message_received()"
+                    self.message_received(
+                        self.input_buffer[:self._terminator_slice])
                     self.input_buffer = ""
 
 #        except (IOError, pyserial.SerialException), e:
-# something overwrites the module when running I get <type 'exceptions.AttributeError'>: 'NoneType' object has no attribute 'SerialException' if port fails...
+# something overwrites the module when running I get <type
+# 'exceptions.AttributeError'>: 'NoneType' object has no attribute
+# 'SerialException' if port fails...
         except IOError as e:
-            print ("Got exception %s" % e)
+            print("Got exception %s" % e)
             self.serial_alive = False
             # It seems we cannot really call this from here, how to detect the problem in main thread ??
-            #self.launcher_instance.unload_device(self.object_name)
+            # self.launcher_instance.unload_device(self.object_name)
 
     def abort_command(self):
         """Uses the break-command to issue "Device clear", from the SCPI documentation (for HP6632B): The status registers, the error queue, and all configuration states are left unchanged when a device clear message is received. Device clear performs the following actions:

@@ -3,17 +3,25 @@
 from scpi import scpi_device
 
 ######################################
-###   Helper functions
+# Helper functions
 ######################################
 
+
 def _format_float_list(val_list):
-    return ",".join(["%.2f"%x for x in val_list])
+    return ",".join(["%.2f" % x for x in val_list])
+
+
 def _format_int_list(val_list):
-    return ",".join(["%d"%x for x in val_list])
+    return ",".join(["%d" % x for x in val_list])
+
+
 def _format_str_list(val_list):
     return ",".join(val_list)
+
+
 def _format_onoff(val):
     return "ON" if val else "OFF"
+
 
 class cmd57(scpi_device):
     """Adds the ROHDE&SCHWARZ CMD57 specific SCPI commands as methods"""
@@ -21,11 +29,16 @@ class cmd57(scpi_device):
     def __init__(self, transport, *args, **kwargs):
         """Initializes a device for the given transport"""
         super(cmd57, self).__init__(transport, *args, **kwargs)
-        self.scpi.command_timeout = 60 # Seconds
-        self.scpi.ask_default_wait = 0 # Seconds
+        self.scpi.command_timeout = 60  # Seconds
+        self.scpi.ask_default_wait = 0  # Seconds
+
+    def set_timeout(self, command_timeout=10):
+        old = self.scpi.command_timeout
+        self.scpi.command_timeout = command_timeout
+        return old
 
     ######################################
-    ###   Low level functions
+    # Low level functions
     ######################################
 
     def ask_installed_options(self):
@@ -57,7 +70,7 @@ class cmd57(scpi_device):
         return [int(io[1:2]), int(io[3:4])]
 
     def make_io_str(self, in_num, out_num):
-        if not in_num in [0,1] or not out_num in [0,1]:
+        if in_num not in [0, 1] or out_num not in [0, 1]:
             return None
         return "I%dO%d" % (in_num, out_num)
 
@@ -83,7 +96,8 @@ class cmd57(scpi_device):
 
     def set_ext_att_rf_out1(self, att):
         """ 2.1 External Attenuation at RF Out 1 """
-        return self.scpi.send_command("SOURce1:CORRection:LOSS %f" % att, False)
+        return self.scpi.send_command("SOURce1:CORRection:LOSS %f" % att,
+                                      False)
 
     def ask_ext_att_rf_in2(self):
         """ 2.1 External Attenuation at RF In 2 """
@@ -99,7 +113,8 @@ class cmd57(scpi_device):
 
     def set_ext_att_rf_out2(self, att):
         """ 2.1 External Attenuation at RF Out 2 """
-        return self.scpi.send_command("SOURce2:CORRection:LOSS %f" % att, False)
+        return self.scpi.send_command("SOURce2:CORRection:LOSS %f" % att,
+                                      False)
 
     #
     # 2.2.1 Signaling Parameters of the BTS
@@ -130,7 +145,8 @@ class cmd57(scpi_device):
 
     def set_bts_ccch_arfcn(self, arfcn):
         """ 2.2.2 Configure CCCH ARFCN """
-        return self.scpi.send_command("CONF:CHAN:BTS:CCCH:ARFCN %d"%int(arfcn), False)
+        return self.scpi.send_command(
+            "CONF:CHAN:BTS:CCCH:ARFCN %d" % int(arfcn), False)
 
     def ask_bts_tch_arfcn(self):
         """ 2.2.2 Configured TCH ARFCN """
@@ -138,7 +154,8 @@ class cmd57(scpi_device):
 
     def set_bts_tch_arfcn(self, arfcn):
         """ 2.2.2 Configure TCH ARFCN """
-        return self.scpi.send_command("CONF:CHAN:BTS:TCH:ARFCN %d"%int(arfcn), False)
+        return self.scpi.send_command(
+            "CONF:CHAN:BTS:TCH:ARFCN %d" % int(arfcn), False)
 
     def ask_bts_tch_ts(self):
         """ 2.2.2 Configured TCH timeslot """
@@ -146,7 +163,8 @@ class cmd57(scpi_device):
 
     def set_bts_tch_ts(self, slot):
         """ 2.2.2 Configure TCH timeslot """
-        return self.scpi.send_command("CONF:CHAN:BTS:TCH:SLOT %d"%int(slot), False)
+        return self.scpi.send_command("CONF:CHAN:BTS:TCH:SLOT %d" % int(slot),
+                                      False)
 
     def ask_bts_tsc(self):
         """ 2.2.2 Configured BTS TSC """
@@ -154,7 +172,7 @@ class cmd57(scpi_device):
 
     def set_bts_tsc(self, tsc):
         """ 2.2.2 Configure BTS TSC """
-        return self.scpi.send_command("CONF:CHAN:BTS:TSC %d"%int(tsc), False)
+        return self.scpi.send_command("CONF:CHAN:BTS:TSC %d" % int(tsc), False)
 
     def ask_bts_expected_power(self):
         """ 2.2.2 Configured BTS Expected Power """
@@ -162,15 +180,19 @@ class cmd57(scpi_device):
 
     def set_bts_expected_power(self, power):
         """ 2.2.2 Configure BTS Expected Power """
-        return self.scpi.send_command("CONF:BTS:POWer:EXPected %.2f"%float(power), False)
+        return self.scpi.send_command(
+            "CONF:BTS:POWer:EXPected %.2f" % float(power), False)
 
     def ask_bts_tch_tx_power(self):
-        """ 2.2.2 Configured BTS Transmitter power of the TCH in the used timeslot """
+        """ 2.2.2 Configured BTS Transmitter power of the TCH in the
+            used timeslot """
         return self.scpi.ask_float("CONF:CHANnel:BTS?")
 
     def set_bts_tch_tx_power(self, power):
-        """ 2.2.2 Configure BTS Transmitter power of the TCH in the used timeslot """
-        return self.scpi.send_command("CONF:CHANnel:BTS %.2f"%float(power), False)
+        """ 2.2.2 Configure BTS Transmitter power of the TCH in the
+            used timeslot """
+        return self.scpi.send_command("CONF:CHANnel:BTS %.2f" % float(power),
+                                      False)
 
     def ask_bts_tch_mode(self):
         """ 2.2.2 Configured BTS Selection of modulation contents on the TCH
@@ -178,7 +200,8 @@ class cmd57(scpi_device):
         return self.scpi.ask_str("CONF:SPEech:MODE?")
 
     def set_bts_tch_mode(self, mode):
-        """ 2.2.2 Configure BTS Transmitter power of the TCH in the used timeslot
+        """ 2.2.2 Configure BTS Transmitter power of the TCH in the
+            used timeslot
             Supported values:
               ECHO    - Loopback in the CMD with delay
               LOOP    - Loopback in the CMD with minimum possible delay
@@ -186,8 +209,9 @@ class cmd57(scpi_device):
               PR11    - 2e11-1 PSR bit pattern
               PR15    - 2e15-1 PSR bit pattern
               PR16    - 2e16-1 PSR bit pattern
-              HANDset - Speech coder/decoder mode (requires hardware option) """
-        return self.scpi.send_command("CONF:SPEech:MODE %s"%str(mode), False)
+              HANDset - Speech coder/decoder mode (requires hardware option)
+        """
+        return self.scpi.send_command("CONF:SPEech:MODE %s" % str(mode), False)
 
     def ask_bts_tch_timing(self):
         """ 2.2.2 Configured BTS Transmit timing (delay)
@@ -197,7 +221,8 @@ class cmd57(scpi_device):
     def set_bts_tch_timing(self, ta):
         """ 2.2.2 Configure BTS Transmit timing (delay)
             Valid in: IDLE, BIDL, BBCH  """
-        return self.scpi.send_command("CONF:BTS:TRANsmit:TIMing %d"%int(ta), False)
+        return self.scpi.send_command("CONF:BTS:TRANsmit:TIMing %d" % int(ta),
+                                      False)
 
     def ask_bts_tch_input_bandwidth(self):
         """ 2.2.2 Configured BTS Input bandwidth for the TCH
@@ -207,12 +232,14 @@ class cmd57(scpi_device):
 
     def set_bts_tch_input_bandwidth(self, bw):
         """ 2.2.2 Configure BTS Input bandwidth for the TCH
-            Note: the value is always set to default when changing to the BTCH state
+            Note: the value is always set to default when changing to the
+            BTCH state
             Valid in: BTCH
             Supported values:
               NARRow   - narrowband (default for timing reference FIX/BCCH)
               WIDE     - wideband (default for timing reference TRIG)  """
-        return self.scpi.send_command("PROCedure:SET:POWer:BANDwidth:INPut %s"%str(bw), False)
+        return self.scpi.send_command(
+            "PROCedure:SET:POWer:BANDwidth:INPut %s" % str(bw), False)
 
     #
     # 2.3 Burst Analysis
@@ -224,7 +251,8 @@ class cmd57(scpi_device):
 
     def set_ban_arfcn(self, arfcn):
         """ 2.3 Burst Analysis (Module testing) / Channel number (ARFCN) """
-        return self.scpi.send_command("CONF:CHAN:BANalysis:ARFCn %d"%int(arfcn), False)
+        return self.scpi.send_command(
+            "CONF:CHAN:BANalysis:ARFCn %d" % int(arfcn), False)
 
     def ask_mod_freq(self):
         """ 2.3 Burst Analysis (Module testing) / Channel frequency
@@ -234,7 +262,8 @@ class cmd57(scpi_device):
     def set_mod_freq(self, freq):
         """ 2.3 Burst Analysis (Module testing) / Channel frequency
             WARN: UNSUPPORTED? """
-        return self.scpi.send_command("CONF:CHAN:MODalysis:ARFCn:FREQ %f"%float(freq), False)
+        return self.scpi.send_command(
+            "CONF:CHAN:MODalysis:ARFCn:FREQ %f" % float(freq), False)
 
     def ask_ban_tsc(self):
         """ 2.3 Burst Analysis (Module testing) TSC """
@@ -242,7 +271,8 @@ class cmd57(scpi_device):
 
     def set_ban_tsc(self, tsc):
         """ 2.3 Burst Analysis (Module testing) TSC """
-        return self.scpi.send_command("CONF:CHAN:BANalysis:TSC %d"%int(tsc), False)
+        return self.scpi.send_command("CONF:CHAN:BANalysis:TSC %d" % int(tsc),
+                                      False)
 
     def ask_ban_expected_power(self):
         """ 2.3 Burst Analysis (Module testing) Expected power (of BTS) """
@@ -250,20 +280,24 @@ class cmd57(scpi_device):
 
     def set_ban_expected_power(self, pwr):
         """ 2.3 Burst Analysis (Module testing) Expected power (of BTS) """
-        return self.scpi.send_command("CONF:BANalysis:POWer:EXPected %f"%float(pwr), False)
+        return self.scpi.send_command(
+            "CONF:BANalysis:POWer:EXPected %f" % float(pwr), False)
 
     def ask_ban_input_bandwidth(self):
-        """ 2.3 Burst Analysis (Module testing) Input Bandwidth for measurement of peak power
+        """ 2.3 Burst Analysis (Module testing) Input Bandwidth for
+            measurement of peak power
             See set_ban_input_bandwidth() for details """
         return self.scpi.ask_str("CONF:BANalysis:POWer:BANDwidth:INPut1?")
 
     def set_ban_input_bandwidth(self, band):
-        """ 2.3 Burst Analysis (Module testing) Input Bandwidth for measurement of peak power
+        """ 2.3 Burst Analysis (Module testing) Input Bandwidth for
+            measurement of peak power
             Used only with input RF IN/OUT (aka RF In1) selected!
             Supported values:
               NARRow - Narrowband measurement (IF power meter)
               WIDE   - Wideband measurement (RF power meter)  """
-        return self.scpi.send_command("CONF:BANalysis:POWer:BANDwidth:INPut1 %s"%band, False)
+        return self.scpi.send_command(
+            "CONF:BANalysis:POWer:BANDwidth:INPut1 %s" % band, False)
 
     def ask_ban_trigger_mode(self):
         """ 2.3 Burst Analysis (Module testing) Trigger mode """
@@ -274,7 +308,8 @@ class cmd57(scpi_device):
             Supported values:
               POWer    - Trigger on rising signal edge
               FREerun  - Trigger without slope   """
-        return self.scpi.send_command("CONF:BANalysis:TRIGger:MODE %s"%mode, False)
+        return self.scpi.send_command("CONF:BANalysis:TRIGger:MODE %s" % mode,
+                                      False)
 
     #
     # 2.4 Network and Test Mode
@@ -298,7 +333,7 @@ class cmd57(scpi_device):
               RFGenerator - RF generator (same as RFM?)
               IQSPec      - IQ spectrum (requires option K43)
         """
-        return self.scpi.send_command("PROCedure:SEL %s"%str(mode), False)
+        return self.scpi.send_command("PROCedure:SEL %s" % str(mode), False)
 
     def bcch_sync(self):
         """ 3 Perform Synchronization with BCCH or Wired Sync """
@@ -318,7 +353,8 @@ class cmd57(scpi_device):
               BTCH      - TCH measurements
               BEXTernal - BER measurements with RS232 / IEEE488
         """
-        return self.scpi.send_command("PROCedure:BTSState %s"%str(state), False)
+        return self.scpi.send_command("PROCedure:BTSState %s" % str(state),
+                                      False)
 
     #
     # 7.2 BER
@@ -329,13 +365,15 @@ class cmd57(scpi_device):
     #
 
     def set_ber_test_num(self, test_num):
-        """ 7.2.1 Selection of the BER Measurement Configuration (Parameter Set)
+        """ 7.2.1 Selection of the BER Measurement Configuration
+            (Parameter Set)
             Supported values: 1-7
             Valid in: ALL  """
         return self.scpi.send_command("CONF:BER:SEL BER%d" % test_num)
 
     def ask_ber_test_num(self):
-        """ 7.2.1 Selection of the BER Measurement Configuration (Parameter Set)
+        """ 7.2.1 Selection of the BER Measurement Configuration
+            (Parameter Set)
             Supported values: 1-7
             Valid in: ALL  """
         res = self.scpi.ask_str("CONF:BER:SEL?")
@@ -352,7 +390,8 @@ class cmd57(scpi_device):
         """ 7.2.2 Maximal Values for Class-Ib Events
             Supported values: 0-100,000
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:BER:CLIB:MEVents %d" % limit)
+        return self.scpi.send_command(
+            "CALCulate:LIMit:BER:CLIB:MEVents %d" % limit)
 
     def ask_ber_limit_class_1b(self):
         """ 7.2.2 Maximal Values for Class-Ib Events
@@ -364,7 +403,8 @@ class cmd57(scpi_device):
         """ 7.2.2 Maximal Values for Class-II Events
             Supported values: 0-100,000
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:BER:CLII:MEVents %d" % limit)
+        return self.scpi.send_command(
+            "CALCulate:LIMit:BER:CLII:MEVents %d" % limit)
 
     def ask_ber_limit_class_2(self):
         """ 7.2.2 Maximal Values for Class-II Events
@@ -376,7 +416,8 @@ class cmd57(scpi_device):
         """ 7.2.2 Maximal Values for Erased Frames
             Supported values: 0-50,000
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:BER:EFRames:MEVents %d" % limit)
+        return self.scpi.send_command(
+            "CALCulate:LIMit:BER:EFRames:MEVents %d" % limit)
 
     def ask_ber_limit_erased_frames(self):
         """ 7.2.2 Maximal Values for Erased Frames
@@ -390,27 +431,29 @@ class cmd57(scpi_device):
 
     def set_ber_used_ts_power(self, power):
         """ 7.2.3 Level for TCH in the Used Timeslot
-            Supported values: 
+            Supported values:
             Valid in: ALL except BEXT  """
         return self.scpi.send_command("CONF:BER:POWer:USED %.1f" % power)
 
     def ask_ber_used_ts_power(self):
         """ 7.2.3 Level for TCH in the Used Timeslot
-            Supported values: 
+            Supported values:
             Valid in: ALL except BEXT  """
         return self.scpi.ask_float("CONF:BER:POWer:USED?")
 
     def set_ber_unused_ts_power(self, power):
-        """ 7.2.3 Level for TCH in the Unused Timeslot relative to the Used Timeslot
+        """ 7.2.3 Level for TCH in the Unused Timeslot relative to the
+            Used Timeslot
             Supported values:
                 -20.0 to +30.0 dB
                 None (OFF) - turn off unused timeslots
             Valid in: ALL except BEXT  """
-        val = "OFF" if power is None else "%d"%power
-        return self.scpi.send_command("CONF:BER:POWer:UNUSed %.1f" % val)
+        val = "OFF" if power is None else "%.1f" % power
+        return self.scpi.send_command("CONF:BER:POWer:UNUSed %s" % val)
 
     def ask_ber_unused_ts_power(self):
-        """ 7.2.3 Level for TCH in the Unused Timeslot relative to the Used Timeslot
+        """ 7.2.3 Level for TCH in the Unused Timeslot relative to the
+            Used Timeslot
             Supported values:
                 -20.0 to +30.0 dB
                 None (OFF) - turn off unused timeslots
@@ -430,21 +473,21 @@ class cmd57(scpi_device):
         return self.scpi.ask_int("CONF:BER:FRAMestosend?")
 
     def ask_ber_max_class_1b_samples(self):
-        """ 7.2.3 Maximal Number of Samples to be sent for Class-Ib bits (read only)
+        """ 7.2.3 Maximal Number of Samples to be sent for Class-Ib bits (RO)
             The value is derived from the "Frames to Send" and is read only.
             Supported values: 78 - 780,000
             Valid in: ALL  """
         return self.scpi.ask_int("CONF:BER:CLIB:MSAMples?")
 
     def ask_ber_max_class_2_samples(self):
-        """ 7.2.3 Maximal Number of Samples to be sent for Class-II bits (read only)
+        """ 7.2.3 Maximal Number of Samples to be sent for Class-II bits (RO)
             The value is derived from the "Frames to Send" and is read only.
             Supported values: 132 - 6,600,000
             Valid in: ALL  """
         return self.scpi.ask_int("CONF:BER:CLII:MSAMples?")
 
     def ask_ber_max_erased_frames_samples(self):
-        """ 7.2.3 Maximal Number of Samples to be sent for Erased Frames (read only)
+        """ 7.2.3 Maximal Number of Samples to be sent for Erased Frames (RO)
             The value is derived from the "Frames to Send" and is read only.
             Supported values: 1 - 50,000
             Valid in: ALL  """
@@ -492,19 +535,22 @@ class cmd57(scpi_device):
     #
 
     def read_ber_class_1b_ber(self):
-        """ 7.2.4 Execute new measurement and Read measured value of Class-Ib BER
+        """ 7.2.4 Execute new measurement and Read measured value of
+            Class-Ib BER
             Supported values: 0 to 100 %
             Valid in: BTCH  """
         return self.scpi.ask_float("READ:BER:CLIB:BER?")
 
     def read_ber_class_1b_events(self):
-        """ 7.2.4 Execute new measurement and Read measured value of Class-Ib events
+        """ 7.2.4 Execute new measurement and Read measured value of
+            Class-Ib events
             Supported values: 0 to 100,000
             Valid in: BTCH  """
         return self.scpi.ask_int("READ:BER:CLIB:EVENts?")
 
     def read_ber_class_1b_rber(self):
-        """ 7.2.4 Execute new measurement and Read measured value of Class-Ib RBER
+        """ 7.2.4 Execute new measurement and Read measured value of
+            Class-Ib RBER
             Supported values: 0 to 100 %
             Valid in: BTCH  """
         return self.scpi.ask_float("READ:BER:CLIB:RBER?")
@@ -528,19 +574,22 @@ class cmd57(scpi_device):
         return self.scpi.ask_float("FETCh:BER:CLIB:RBER?")
 
     def read_ber_class_2_ber(self):
-        """ 7.2.4 Execute new measurement and Read measured value of Class-II BER
+        """ 7.2.4 Execute new measurement and Read measured value of
+            Class-II BER
             Supported values: 0 to 100 %
             Valid in: BTCH  """
         return self.scpi.ask_float("READ:BER:CLII:BER?")
 
     def read_ber_class_2_events(self):
-        """ 7.2.4 Execute new measurement and Read measured value of Class-II events
+        """ 7.2.4 Execute new measurement and Read measured value of
+            Class-II events
             Supported values: 0 to 100,000
             Valid in: BTCH  """
         return self.scpi.ask_int("READ:BER:CLII:EVENts?")
 
     def read_ber_class_2_rber(self):
-        """ 7.2.4 Execute new measurement and Read measured value of Class-II RBER
+        """ 7.2.4 Execute new measurement and Read measured value of
+            Class-II RBER
             Supported values: 0 to 100 %
             Valid in: BTCH  """
         return self.scpi.ask_float("READ:BER:CLII:RBER?")
@@ -564,13 +613,15 @@ class cmd57(scpi_device):
         return self.scpi.ask_float("FETCh:BER:CLII:RBER?")
 
     def read_ber_erased_fer(self):
-        """ 7.2.4 Execute new measurement and Read measured value of Erased Frames FER
+        """ 7.2.4 Execute new measurement and Read measured value of
+            Erased Frames FER
             Supported values: 0 to 100 %
             Valid in: BTCH  """
         return self.scpi.ask_float("READ:BER:EFRames:FER?")
 
     def read_ber_erased_events(self):
-        """ 7.2.4 Execute new measurement and Read measured value of Erased Frames events
+        """ 7.2.4 Execute new measurement and Read measured value of
+            Erased Frames events
             Supported values: 0 to 50,000
             Valid in: BTCH  """
         return self.scpi.ask_int("READ:BER:EFRames:EVENts?")
@@ -600,10 +651,13 @@ class cmd57(scpi_device):
         return self.scpi.ask_int("FETCh:BER:CRC:ERRor?")
 
     def read_ber_test_result(self):
-        """ 7.2.4 Execute new measurement and Read measured Total Result of a BER Measurement
+        """ 7.2.4 Execute new measurement and Read measured Total Result of a
+            BER Measurement
             Supported values:
-                PASS   - Results valid, all configured frames sent, all tolerances observed
-                FAIL   - Results valid, but not all configured frames sent and/or tolerances observed
+                PASS   - Results valid, all configured frames sent, all
+                         tolerances observed
+                FAIL   - Results valid, but not all configured frames
+                         sent and/or tolerances observed
                 INV    - Measurement results are invalid
                 TLOW   - BS signal level is too low, results are not valid
                 IMP    - No measurement possible, results are not valid
@@ -613,8 +667,10 @@ class cmd57(scpi_device):
     def fetch_ber_test_result(self):
         """ 7.2.4 Fetch measured Total Result of a BER Measurement
             Supported values:
-                PASS   - Results valid, all configured frames sent, all tolerances observed
-                FAIL   - Results valid, but not all configured frames sent and/or tolerances observed
+                PASS   - Results valid, all configured frames sent, all
+                         tolerances observed
+                FAIL   - Results valid, but not all configured frames
+                         sent and/or tolerances observed
                 INV    - Measurement results are invalid
                 TLOW   - BS signal level is too low, results are not valid
                 IMP    - No measurement possible, results are not valid
@@ -626,7 +682,8 @@ class cmd57(scpi_device):
     #
 
     def ask_power_mask_match(self):
-        """ 7.3.1 Power Tolerance values / Query for observance of the tolerances of the power/time template
+        """ 7.3.1 Power Tolerance values / Query for observance of the
+            tolerances of the power/time template
             Valid in: BTCH, MOD  """
         return self.scpi.ask_str("CALC:LIMit:POWer:MATChing?")
 
@@ -648,7 +705,9 @@ class cmd57(scpi_device):
 
     def ask_burst_power_arr(self):
         """ 7.3.2 Power Measurement / Power values of the entire burst (read)
-            Values are calculated at 1/4-bit steps and are returned in the range from bit index -10.0 to bit index +157.0. This results in 669 values.
+            Values are calculated at 1/4-bit steps and are returned in the
+            range from bit index -10.0 to bit index +157.0. This results
+            in 669 values.
             Valid in: BTCH, BAN
             Unit: dB  """
         return self.scpi.ask_float_list("READ:ARRay:BURSt:POWer?")
@@ -664,34 +723,41 @@ class cmd57(scpi_device):
     #
 
     def ask_phase_freq_match(self):
-        """ 7.4.1 Phase and Frequency Errors / Tolerance values / Query for observance of tolerances (single-value measurment)
+        """ 7.4.1 Phase and Frequency Errors / Tolerance values / Query for
+            observance of tolerances (single-value measurment)
             Valid in: BBCH, BTCH, BAN, MOD
             Return: (MATC | NMAT | INV) for each of:
                     - Peak phase error
                     - RMS phase error
                     - Frequency error """
-        return self.scpi.ask_str_list("CALCulate:LIMit:PHFR:TOLerance:MATChing?")
+        return self.scpi.ask_str_list(
+            "CALCulate:LIMit:PHFR:TOLerance:MATChing?")
 
     def ask_phase_freq_match_avg(self):
-        """ 7.4.1 Phase and Frequency Errors / Tolerance values / Query for observance of tolerances (average measurment)
+        """ 7.4.1 Phase and Frequency Errors / Tolerance values / Query for
+            observance of tolerances (average measurment)
             Valid in: BTCH, BAN, MOD
             Return: (MATC | NMAT | INV) for each of:
                     - Peak phase error
                     - RMS phase error
                     - Frequency error """
-        return self.scpi.ask_str_list("CALCulate:LIMit:PHFR:TOLerance:MATChing:AVERage?")
+        return self.scpi.ask_str_list(
+            "CALCulate:LIMit:PHFR:TOLerance:MATChing:AVERage?")
 
     def ask_phase_freq_match_max(self):
-        """ 7.4.1 Phase and Frequency Errors / Tolerance values / Query for observance of tolerances (max measurment)
+        """ 7.4.1 Phase and Frequency Errors / Tolerance values / Query for
+            observance of tolerances (max measurment)
             Valid in: BTCH, BAN, MOD
             Return: (MATC | NMAT | INV) for each of:
                     - Peak phase error
                     - RMS phase error
                     - Frequency error """
-        return self.scpi.ask_str_list("CALCulate:LIMit:PHFR:TOLerance:MATChing:MAXimum?")
+        return self.scpi.ask_str_list(
+            "CALCulate:LIMit:PHFR:TOLerance:MATChing:MAXimum?")
 
     #
-    # 7.4.2 Phase and Frequency Errors / Test Parameters for Phase and Frequency Error Measurment
+    # 7.4.2 Phase and Frequency Errors / Test Parameters for Phase and
+    # Frequency Error Measurment
     #
 
     def ask_phase_decoding_mode(self):
@@ -702,41 +768,49 @@ class cmd57(scpi_device):
     def set_phase_decoding_mode(self, mode):
         """ 7.4.2 Phase and Frequency Errors / Decoding mode
             Supported values:
-              STANdard  - Guard and tail bits assumed to be set according to the Standard
-              GATBits   - Guard and tail bits decoded just as normal data bits without assumptions   """
-        return self.scpi.send_command("CONF:DECoding:MODE %s"%mode, False)
+              STANdard  - Guard and tail bits assumed to be set according to
+                          the Standard
+              GATBits   - Guard and tail bits decoded just as normal data
+                          bits without assumptions   """
+        return self.scpi.send_command("CONF:DECoding:MODE %s" % mode, False)
 
     #
     # 7.4.3 Phase and Frequency Errors / Phase Error Measurement
     #
 
     def ask_phase_err_rms(self):
-        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst RMS (single-value measurment, execute)
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst
+            RMS (single-value measurment, execute)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("READ:BURSt:PHASe:ERRor:RMS?")
 
     def fetch_phase_err_rms(self):
-        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst RMS (single-value measurment, fetch)
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst
+            RMS (single-value measurment, fetch)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("FETCh:BURSt:PHASe:ERRor:RMS?")
 
     def ask_phase_err_pk(self):
-        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst Peak (single-value measurment, execute)
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst
+            Peak (single-value measurment, execute)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("READ:BURSt:PHASe:ERRor:PEAK?")
 
     def fetch_phase_err_pk(self):
-        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst Peak (single-value measurment, fetch)
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of Burst
+            Peak (single-value measurment, fetch)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float("FETCh:BURSt:PHASe:ERRor:PEAK?")
 
     def ask_phase_err_arr(self):
-        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of the Total Burst (single-value measurment, execute)
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of the Total
+            Burst (single-value measurment, execute)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float_list("READ:ARRay:BURSt:PHASe:ERRor?")
 
     def fetch_phase_err_arr(self):
-        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of the Total Burst (single-value measurment, fetch)
+        """ 7.4.3 Phase and Frequency Errors / Total Phase Error of the Total
+            Burst (single-value measurment, fetch)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float_list("FETCh:ARRay:BURSt:PHASe:ERRor?")
 
@@ -745,12 +819,14 @@ class cmd57(scpi_device):
     #
 
     def ask_freq_err(self):
-        """ 7.4.3 Phase and Frequency Errors / Total Frequency Error of Burst (single-value measurment, execute)
+        """ 7.4.3 Phase and Frequency Errors / Total Frequency Error of Burst
+            (single-value measurment, execute)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_int("READ:BURSt:FREQ:ERRor?")
 
     def fetch_freq_err(self):
-        """ 7.4.3 Phase and Frequency Errors / Total Frequency Error of Burst (single-value measurment, fetch)
+        """ 7.4.3 Phase and Frequency Errors / Total Frequency Error of Burst
+            (single-value measurment, fetch)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_int("FETCh:BURSt:FREQ:ERRor?")
 
@@ -759,162 +835,215 @@ class cmd57(scpi_device):
     #
 
     def reset_spectrum_modulation_tolerance(self):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Reset tolerance values to default (Modulation)
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Reset tolerance
+            values to default (Modulation)
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:CLEar", False)
+        return self.scpi.send_command(
+            "CALCulate:LIMit:SPECtrum:MODulation:CLEar", False)
 
     def reset_spectrum_switching_tolerance(self):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Reset tolerance values to default (Switching)
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Reset tolerance
+            values to default (Switching)
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:CLEar", False)
+        return self.scpi.send_command(
+            "CALCulate:LIMit:SPECtrum:SWITching:CLEar", False)
 
     def ask_spectrum_modulation_tolerance_abs(self):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Modulation)
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute
+            tolerance for spectrum (Modulation)
             Returns a list of 2 values. (UNDOCUMENTED)
             Supported values: -100.0 to 5.0 dBm
             Default value: -57.0 dBm
             Valid in: ALL  """
-        return self.scpi.ask_float_list("CALCulate:LIMit:SPECtrum:MODulation:ABSolute?")
+        return self.scpi.ask_float_list(
+            "CALCulate:LIMit:SPECtrum:MODulation:ABSolute?")
 
     def set_spectrum_modulation_tolerance_abs(self, dbm_list):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Modulation)
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute
+            tolerance for spectrum (Modulation)
             Supported values: -100.0 to 5.0 dBm
             Default value: -57.0 dBm
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:ABSolute %s" % _format_float_list(dbm_list), False)
+        return self.scpi.send_command(
+            "CALCulate:LIMit:SPECtrum:MODulation:ABSolute " +
+            "%s" % _format_float_list(dbm_list), False)
 
     def ask_spectrum_modulation_tolerance_rel(self):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Modulation)
-            Returns values for 10 frequency offsets (in kHz): [100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative
+            tolerance for spectrum (Modulation)
+            Returns values for 10 frequency offsets (in kHz):
+            [100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
             Supported values: -100.0 to 5.0 dBm
             Valid in: ALL  """
-        return self.scpi.ask_float_list("CALCulate:LIMit:SPECtrum:MODulation:RELative?")
+        return self.scpi.ask_float_list(
+            "CALCulate:LIMit:SPECtrum:MODulation:RELative?")
 
     def set_spectrum_modulation_tolerance_rel(self, db_list):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Modulation)
-            Requires values at 10 frequency offsets (in kHz): [100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative
+            tolerance for spectrum (Modulation)
+            Requires values at 10 frequency offsets (in kHz):
+            [100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600]
             Supported values: -100.0 to 5.0 dB
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:MODulation:RELative %s" % _format_float_list(db_list), False)
+        return self.scpi.send_command(
+            "CALCulate:LIMit:SPECtrum:MODulation:RELative " +
+            "%s" % _format_float_list(db_list), False)
 
     def ask_spectrum_switching_tolerance_abs(self):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Switching)
-            Returns values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute
+            tolerance for spectrum (Switching)
+            Returns values at 4 frequency offsets (in kHz):
+            [400, 600, 1200, 1800]
             Supported values: -100.0 to 5.0 dBm
             Valid in: ALL  """
-        return self.scpi.ask_float_list("CALCulate:LIMit:SPECtrum:SWITching:ABSolute?", False)
+        return self.scpi.ask_float_list(
+            "CALCulate:LIMit:SPECtrum:SWITching:ABSolute?", False)
 
     def set_spectrum_switching_tolerance_abs(self, dbm_list):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute tolerance for spectrum (Switching)
-            Requires values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Absolute
+            tolerance for spectrum (Switching)
+            Requires values at 4 frequency offsets (in kHz):
+            [400, 600, 1200, 1800]
             Supported values: -100.0 to 5.0 dBm
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:ABSolute %s" % _format_float_list(dbm_list), False)
+        return self.scpi.send_command(
+            "CALCulate:LIMit:SPECtrum:SWITching:ABSolute " +
+            "%s" % _format_float_list(dbm_list), False)
 
     def ask_spectrum_switching_tolerance_rel(self):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Switching)
-            Returns values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative
+            tolerance for spectrum (Switching)
+            Returns values at 4 frequency offsets (in kHz):
+            [400, 600, 1200, 1800]
             Supported values: -100.0 to 5.0 dB
             Valid in: ALL  """
-        return self.scpi.ask_float_list("CALCulate:LIMit:SPECtrum:SWITching:RELative?", False)
+        return self.scpi.ask_float_list(
+            "CALCulate:LIMit:SPECtrum:SWITching:RELative?", False)
 
     def set_spectrum_switching_tolerance_rel(self, db_list):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative tolerance for spectrum (Switching)
-            Requires values at 4 frequency offsets (in kHz): [400, 600, 1200, 1800]
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Relative
+            tolerance for spectrum (Switching)
+            Requires values at 4 frequency offsets (in kHz):
+            [400, 600, 1200, 1800]
             Supported values: -100.0 to 5.0 dB
             Valid in: ALL  """
-        return self.scpi.send_command("CALCulate:LIMit:SPECtrum:SWITching:RELative %s" % _format_float_list(db_list), False)
+        return self.scpi.send_command(
+            "CALCulate:LIMit:SPECtrum:SWITching:RELative " +
+            "%s" % _format_float_list(db_list), False)
 
     def ask_spectrum_modulation_match(self):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Query for observance of tolerances of the Spectrum (Modulation)
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Query for
+            observance of tolerances of the Spectrum (Modulation)
             Note: Supplies result for the last measurement
             Valid in: BTCH, MOD
             Return: (MATC | NMAT | INV) """
-        return self.scpi.ask_str("CALCulate:LIMit:SPECtrum:MODulation:MATChing?")
+        return self.scpi.ask_str(
+            "CALCulate:LIMit:SPECtrum:MODulation:MATChing?")
 
     def ask_spectrum_switching_match(self):
-        """ 7.5.1 Spectrum Measurements / Tolerance values / Query for observance of tolerances of the Spectrum (Switching)
+        """ 7.5.1 Spectrum Measurements / Tolerance values / Query for
+            observance of tolerances of the Spectrum (Switching)
             Note: Supplies result for the last measurement
             Valid in: BTCH, MOD
             Return: (MATC | NMAT | INV) """
         # TODO: For some reason always returns INV.
-        return self.scpi.ask_str("CALCulate:LIMit:SPECtrum:SWITching:MATChing?")
+        return self.scpi.ask_str(
+            "CALCulate:LIMit:SPECtrum:SWITching:MATChing?")
 
     #
     # 7.5.2 Spectrum Measurements / Test Parameters
     #
 
     def ask_spectrum_modulation_burst_num(self):
-        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts to be Measured (Modulation)
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts
+            to be Measured (Modulation)
             Supported values: 1 to 2000
             Valid in: IDLE  """
         return self.scpi.ask_int("CONF:SPECtrum:MODulation:AVERage?", False)
 
     def set_spectrum_modulation_burst_num(self, num):
-        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts to be Measured (Switching)
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts
+            to be Measured (Switching)
             Supported values: 1 to 2000
             Valid in: IDLE  """
-        return self.scpi.send_command("CONF:SPECtrum:MODulation:AVERage %d" % num, False)
+        return self.scpi.send_command(
+            "CONF:SPECtrum:MODulation:AVERage %d" % num, False)
 
     def ask_spectrum_switching_burst_num(self):
-        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts to be Measured (Switching)
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts
+            to be Measured (Switching)
             Supported values: 1 to 2000
             Valid in: IDLE  """
         return self.scpi.ask_int("CONF:SPECtrum:SWITching:AVERage?", False)
 
     def set_spectrum_switching_burst_num(self, num):
-        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts to be Measured (Switching)
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Number of Bursts
+            to be Measured (Switching)
             Supported values: 1 to 2000
             Valid in: IDLE  """
-        return self.scpi.send_command("CONF:SPECtrum:SWITching:AVERage %d" % num, False)
+        return self.scpi.send_command(
+            "CONF:SPECtrum:SWITching:AVERage %d" % num, False)
 
     def ask_spectrum_switching_noise_corr(self):
-        """ 7.5.2 Spectrum Measurements / Test Parameters / Noise Correction (Switching)
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Noise Correction
+            (Switching)
             Supported values: 1 to 2000
             Valid in: ALL  """
-        return self.scpi.ask_bool("CONF:SPECtrum:SWITching:NOISe:CORRection?", False)
+        return self.scpi.ask_bool("CONF:SPECtrum:SWITching:NOISe:CORRection?",
+                                  False)
 
     def set_spectrum_switching_noise_corr(self, corr):
-        """ 7.5.2 Spectrum Measurements / Test Parameters / Noise Correction (Switching)
+        """ 7.5.2 Spectrum Measurements / Test Parameters / Noise Correction
+            (Switching)
             Supported values: True (ON) / False (OFF)
             Valid in: ALL  """
-        return self.scpi.send_command("CONF:SPECtrum:SWITching:NOISe:CORRection %s" % _format_onoff(corr), False)
+        return self.scpi.send_command(
+            "CONF:SPECtrum:SWITching:NOISe:CORRection %s" % _format_onoff(
+                corr), False)
 
     #
     # 7.5.3 Spectrum Measurements / Measurements
     #
 
     def fetch_spectrum_modulation_offsets(self):
-        """ Return a list of frequency offsets (in kHz) for spectrum due to modulattion measurements """
-        return [-1800, -1600, -1400, -1200, -1000, -800, -600, -400, -250, -200, -100, 0, 100, 200, 250, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]
+        """ Return a list of frequency offsets (in kHz) for spectrum
+            due to modulattion measurements """
+        return [-1800, -1600, -1400, -1200, -1000, -800, -600, -400, -250,
+                -200, -100, 0, 100, 200, 250, 400, 600, 800, 1000, 1200,
+                1400, 1600, 1800]
 
     def ask_spectrum_modulation(self):
         """ 7.5.3 Executing Spectrum Measurement (Modulation)
-            Returns 23 frequency offsets (see fetch_spectrum_modulation_offsets() for a list)
+            Returns 23 frequency offsets (see
+            fetch_spectrum_modulation_offsets() for a list)
             Valid in: BTCH, MOD  """
         # TODO: LONG operation
         return self.scpi.ask_float_list("READ:ARRay:SPECtrum:MODulation?")
 
     def fetch_spectrum_modulation(self):
         """ 7.5.3 Executing Spectrum Measurement (Modulation)
-            Returns 23 frequency offsets (see fetch_spectrum_modulation_offsets() for a list)
+            Returns 23 frequency offsets (see
+            fetch_spectrum_modulation_offsets() for a list)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float_list("FETCh:ARRay:SPECtrum:MODulation?")
 
     def fetch_spectrum_switching_offsets(self):
-        """ Return a list of frequency offsets (in kHz) for spectrum due to modulattion measurements """
+        """ Return a list of frequency offsets (in kHz) for spectrum due to
+            modulattion measurements """
         return [-1800, -1200, -600, -400, 0, 400, 600, 1200, 1800]
 
     def ask_spectrum_switching(self):
         """ 7.5.3 Executing Spectrum Measurement (Switching)
-            Returns 9 frequency offsets (see fetch_spectrum_switching_offsets() for a list)
+            Returns 9 frequency offsets (see
+            fetch_spectrum_switching_offsets() for a list)
             Valid in: BTCH, MOD  """
         # TODO: LONG operation
         return self.scpi.ask_float_list("READ:ARRay:SPECtrum:BTS:SWITching?")
 
     def fetch_spectrum_switching(self):
         """ 7.5.3 Executing Spectrum Measurement (Switching)
-            Returns 9 frequency offsets (see fetch_spectrum_switching_offsets() for a list)
+            Returns 9 frequency offsets (see
+            fetch_spectrum_switching_offsets() for a list)
             Valid in: BTCH, MOD  """
         return self.scpi.ask_float_list("FETCh:ARRay:SPECtrum:BTS:SWITching?")
 
@@ -935,54 +1064,87 @@ class cmd57(scpi_device):
         return self.scpi.ask_str("STATus:DEVice?")
 
     ######################################
-    ###   High level functions
+    # High level functions
     ######################################
 
     #
     # Test modes configuration
     #
 
-    def configure_mod(self, expected_power=None, arfcn=None, tsc=None, decode=None, input_bandwidth=None, trigger_mode=None):
-        if expected_power is not None: self.set_ban_expected_power(expected_power)
-        if arfcn is not None: self.set_ban_arfcn(arfcn)
-        if tsc is not None: self.set_ban_tsc(tsc)
-        if decode is not None: self.set_phase_decoding_mode(decode)
-        if input_bandwidth is not None: self.set_ban_input_bandwidth(input_bandwidth)
-        if trigger_mode is not None: self.set_ban_trigger_mode(trigger_mode)
+    def configure_mod(self, expected_power=None, arfcn=None, tsc=None,
+                      decode=None, input_bandwidth=None, trigger_mode=None):
+        if expected_power is not None:
+            self.set_ban_expected_power(expected_power)
+        if arfcn is not None:
+            self.set_ban_arfcn(arfcn)
+        if tsc is not None:
+            self.set_ban_tsc(tsc)
+        if decode is not None:
+            self.set_phase_decoding_mode(decode)
+        if input_bandwidth is not None:
+            self.set_ban_input_bandwidth(input_bandwidth)
+        if trigger_mode is not None:
+            self.set_ban_trigger_mode(trigger_mode)
 
-    def configure_man(self, ccch_arfcn=None, tch_arfcn=None, tch_ts=None, tsc=None, expected_power=None, \
-                      tch_tx_power=None, tch_mode=None, tch_timing=None, tch_input_bandwidth=None):
-        if ccch_arfcn is not None: self.set_bts_ccch_arfcn(ccch_arfcn)
-        if tch_arfcn is not None: self.set_bts_tch_arfcn(tch_arfcn)
-        if tch_ts is not None: self.set_bts_tch_ts(tch_ts)
-        if tsc is not None: self.set_bts_tsc(tsc)
-        if expected_power is not None: self.set_bts_expected_power(expected_power)
-        if tch_tx_power is not None: self.set_bts_tch_tx_power(tch_tx_power)
-        if tch_mode is not None: self.set_bts_tch_mode(tch_mode)
-        if tch_timing is not None: self.set_bts_tch_timing(tch_timing)
-        if tch_input_bandwidth is not None: self.set_bts_tch_input_bandwidth(tch_input_bandwidth)
+    def configure_man(self, ccch_arfcn=None, tch_arfcn=None, tch_ts=None,
+                      tsc=None, expected_power=None, tch_tx_power=None,
+                      tch_mode=None, tch_timing=None,
+                      tch_input_bandwidth=None):
+        if ccch_arfcn is not None:
+            self.set_bts_ccch_arfcn(ccch_arfcn)
+        if tch_arfcn is not None:
+            self.set_bts_tch_arfcn(tch_arfcn)
+        if tch_ts is not None:
+            self.set_bts_tch_ts(tch_ts)
+        if tsc is not None:
+            self.set_bts_tsc(tsc)
+        if expected_power is not None:
+            self.set_bts_expected_power(expected_power)
+        if tch_tx_power is not None:
+            self.set_bts_tch_tx_power(tch_tx_power)
+        if tch_mode is not None:
+            self.set_bts_tch_mode(tch_mode)
+        if tch_timing is not None:
+            self.set_bts_tch_timing(tch_timing)
+        if tch_input_bandwidth is not None:
+            self.set_bts_tch_input_bandwidth(tch_input_bandwidth)
 
     def configure_spectrum_modulation(self, burst_num=None):
-        if burst_num is not None: self.set_spectrum_modulation_burst_num(burst_num)
+        if burst_num is not None:
+            self.set_spectrum_modulation_burst_num(burst_num)
 
     def configure_spectrum_switching(self, burst_num=None, noise_corr=None):
-        if burst_num is not None: self.set_spectrum_switching_burst_num(burst_num)
-        if noise_corr is not None: self.set_spectrum_switching_noise_corr(noise_corr)
+        if burst_num is not None:
+            self.set_spectrum_switching_burst_num(burst_num)
+        if noise_corr is not None:
+            self.set_spectrum_switching_noise_corr(noise_corr)
 
     def configure_spectrum_modulation_mask_rel(self, bts_power):
         # According to the Table 6.5-1
         if bts_power <= 33:
-            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -60.0, -60.0, -60.0, -63.0, -63.0, -63.0])
+            self.set_spectrum_modulation_tolerance_rel(
+                [0.5, -30.0, -33.0, -60.0, -60.0, -60.0, -60.0, -63.0, -63.0,
+                 -63.0])
         elif bts_power <= 35:
-            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -62.0, -62.0, -62.0, -65.0, -65.0, -65.0])
+            self.set_spectrum_modulation_tolerance_rel(
+                [0.5, -30.0, -33.0, -60.0, -62.0, -62.0, -62.0, -65.0, -65.0,
+                 -65.0])
         elif bts_power <= 37:
-            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -64.0, -64.0, -64.0, -67.0, -67.0, -67.0])
+            self.set_spectrum_modulation_tolerance_rel(
+                [0.5, -30.0, -33.0, -60.0, -64.0, -64.0, -64.0, -67.0, -67.0,
+                 -67.0])
         elif bts_power <= 39:
-            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -66.0, -66.0, -66.0, -69.0, -69.0, -69.0])
+            self.set_spectrum_modulation_tolerance_rel(
+                [0.5, -30.0, -33.0, -60.0, -66.0, -66.0, -66.0, -69.0, -69.0,
+                 -69.0])
         elif bts_power <= 41:
-            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -68.0, -68.0, -68.0, -68.0, -71.0, -71.0])
-        elif bts_power > 41: # >= 43 in the standard
-            self.set_spectrum_modulation_tolerance_rel([0.5, -30.0, -33.0, -60.0, -70.0, -70.0, -70.0, -70.0, -73.0, -73.0])
+            self.set_spectrum_modulation_tolerance_rel(
+                [0.5, -30.0, -33.0, -60.0, -68.0, -68.0, -68.0, -68.0, -71.0,
+                 -71.0])
+        elif bts_power > 41:  # >= 43 in the standard
+            self.set_spectrum_modulation_tolerance_rel(
+                [0.5, -30.0, -33.0, -60.0, -70.0, -70.0, -70.0, -70.0, -73.0,
+                 -73.0])
 
     #
     # Switching between test modes
@@ -1050,4 +1212,3 @@ def rs232(port, **kwargs):
     serial_port.write(b"\n")
 
     return transport
-
